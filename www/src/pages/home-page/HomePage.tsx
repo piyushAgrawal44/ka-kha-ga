@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Sparkles, Users, LineChart, Bell, FileText, Shield, Zap, Heart, Target, Calendar, Award, TrendingUp, Brain, Mic, Ear, Smile, CheckCircle2, ArrowRight, Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function HomePage() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -97,9 +98,8 @@ export default function HomePage() {
                             <a href="#features" className="text-gray-700 hover:text-purple-600 transition-colors">Features</a>
                             <a href="#benefits" className="text-gray-700 hover:text-purple-600 transition-colors">Benefits</a>
                             <a href="#specializations" className="text-gray-700 hover:text-purple-600 transition-colors">Specializations</a>
-                            <button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-full hover:shadow-lg transition-all transform hover:scale-105">
-                                Get Started
-                            </button>
+                            <Link to={'/workflow'} className="text-gray-700 hover:text-purple-600 transition-colors">Workflows</Link>
+                           
                         </div>
 
                         <button
@@ -118,9 +118,7 @@ export default function HomePage() {
                             <a href="#features" className="block text-gray-700 hover:text-purple-600">Features</a>
                             <a href="#benefits" className="block text-gray-700 hover:text-purple-600">Benefits</a>
                             <a href="#specializations" className="block text-gray-700 hover:text-purple-600">Specializations</a>
-                            <button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-full">
-                                Get Started
-                            </button>
+                            <Link to={'/workflow'} className="block text-gray-700 hover:text-purple-600">Workflows</Link>
                         </div>
                     </div>
                 )}
@@ -302,11 +300,9 @@ export default function HomePage() {
                 <div className="max-w-4xl mx-auto">
                     <div className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl p-12 text-center shadow-2xl">
                         <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                            Ready to Transform Your Practice?
+                            Ready to Transform Your Child Growth?
                         </h2>
-                        <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
-                            Join hundreds of therapists and educators who are already making a difference in children's lives
-                        </p>
+
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <a href='mailto:developerbowl@gmail.com'>
                                 <button className="bg-white text-purple-600 px-8 py-4 rounded-full text-lg font-semibold hover:shadow-xl transition-all transform hover:scale-105">
