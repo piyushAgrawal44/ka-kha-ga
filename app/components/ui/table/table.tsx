@@ -1,70 +1,127 @@
-// Table.tsx - Fun & Childish themed data table component
+// Table.tsx - Server-Side Pagination Table Component
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
   ColumnDef,
   SortingState,
   flexRender,
+  PaginationState,
 } from '@tanstack/react-table';
 import {
   ChevronLeft,
   ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
   Star,
   Sparkles,
   Heart,
-  Smile,
 } from 'lucide-react';
 
-interface ChildishTableProps<T> {
+export interface TableProps<T> {
   data: T[];
   columns: ColumnDef<T, any>[];
-  pageSize?: number;
-  showSearch?: boolean;
-  searchPlaceholder?: string;
+  
+  // Server-side pagination props
+  pageCount: number; // Total number of pages from server
+  totalRows: number; // Total number of rows from server
+  
+  // Controlled state
+  pageIndex: number;
+  pageSize: number;
+  sorting?: SortingState;
+  
+  // Callbacks
+  onPaginationChange: (pageIndex: number, pageSize: number) => void;
+  onSortingChange?: (sorting: SortingState) => void;
+  
+  // Optional props
+  pageSizeOptions?: number[];
   emptyMessage?: string;
+  loading?: boolean;
 }
 
 export function Table<T>({
   data,
   columns,
-  pageSize = 10,
+  pageCount,
+  totalRows,
+  pageIndex,
+  pageSize,
+  sorting = [],
+  onPaginationChange,
+  onSortingChange,
+  pageSizeOptions = [5, 10, 20, 50],
   emptyMessage = 'No data found',
-}: ChildishTableProps<T>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = useState('');
-  const [pagination, setPagination] = useState({
-    pageIndex: 0,
+  loading = false,
+}: TableProps<T>) {
+  const [localPageInput, setLocalPageInput] = useState(pageIndex + 1);
+
+  // Sync local page input with external pageIndex
+  useEffect(() => {
+    setLocalPageInput(pageIndex + 1);
+  }, [pageIndex]);
+
+  const pagination: PaginationState = {
+    pageIndex,
     pageSize,
-  });
+  };
 
   const table = useReactTable({
     data,
     columns,
+    pageCount,
     state: {
-      sorting,
-      globalFilter,
       pagination,
+      sorting,
     },
-    onSortingChange: setSorting,
-    onGlobalFilterChange: setGlobalFilter,
-    onPaginationChange: setPagination,
+    onSortingChange: onSortingChange ? (updater) => {
+      const newSorting = typeof updater === 'function' ? updater(sorting) : updater;
+      onSortingChange(newSorting);
+    } : undefined,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    manualPagination: true, // Server-side pagination
+    manualSorting: true, // Server-side sorting
   });
 
-  const pageSizeOptions = [5, 10, 20, 50];
+  const handlePreviousPage = () => {
+    if (pageIndex > 0) {
+      onPaginationChange(pageIndex - 1, pageSize);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (pageIndex < pageCount - 1) {
+      onPaginationChange(pageIndex + 1, pageSize);
+    }
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    onPaginationChange(0, newPageSize); // Reset to first page when changing page size
+  };
+
+  const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setLocalPageInput(value ? parseInt(value) : 0);
+  };
+
+  const handlePageInputBlur = () => {
+    const page = localPageInput - 1;
+    if (page >= 0 && page < pageCount) {
+      onPaginationChange(page, pageSize);
+    } else {
+      // Reset to current page if invalid
+      setLocalPageInput(pageIndex + 1);
+    }
+  };
+
+  const handlePageInputKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handlePageInputBlur();
+    }
+  };
 
   // Fun decorative stars for the table
   const decorativeStars = [
@@ -74,6 +131,9 @@ export function Table<T>({
     { top: '70%', right: '5%', delay: '1.5s', size: 'w-4 h-4' },
     { top: '85%', left: '7%', delay: '2s', size: 'w-3 h-3' },
   ];
+
+  const canPreviousPage = pageIndex > 0;
+  const canNextPage = pageIndex < pageCount - 1;
 
   return (
     <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-4 border-purple-200 relative">
@@ -93,10 +153,17 @@ export function Table<T>({
         ))}
       </div>
 
-     
-
       {/* Table Container */}
       <div className="overflow-x-auto relative">
+        {loading && (
+          <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
+            <div className="flex flex-col items-center space-y-3">
+              <Sparkles className="w-10 h-10 text-purple-600 animate-spin" />
+              <p className="text-purple-700 font-semibold">Loading...</p>
+            </div>
+          </div>
+        )}
+        
         <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -140,7 +207,7 @@ export function Table<T>({
             ))}
           </thead>
           <tbody>
-            {table.getRowModel().rows.length === 0 ? (
+            {data.length === 0 ? (
               <tr>
                 <td
                   colSpan={columns.length}
@@ -184,14 +251,11 @@ export function Table<T>({
           {/* Page Size Selector */}
           <div className="flex items-center space-x-3">
             <span className="text-sm font-medium text-purple-800 flex items-center">
-             
               Show
             </span>
             <select
-              value={table.getState().pagination.pageSize}
-              onChange={(e) => {
-                table.setPageSize(Number(e.target.value));
-              }}
+              value={pageSize}
+              onChange={(e) => handlePageSizeChange(Number(e.target.value))}
               className="border-2 border-purple-300 rounded-lg px-3 py-1.5 bg-white text-purple-800 font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer shadow-sm"
             >
               {pageSizeOptions.map((size) => (
@@ -200,7 +264,9 @@ export function Table<T>({
                 </option>
               ))}
             </select>
-            <span className="text-sm font-medium text-purple-800">entries of total {table.getFilteredRowModel().rows.length} results</span>
+            <span className="text-sm font-medium text-purple-800">
+              of {totalRows} total results
+            </span>
           </div>
 
           {/* Page Info with Go to Page */}
@@ -208,56 +274,39 @@ export function Table<T>({
             <div className="flex items-center space-x-2 text-sm font-medium text-purple-800 bg-white px-4 py-2 rounded-full shadow-sm border-2 border-purple-200">
               <Heart className="w-4 h-4 text-pink-500" />
               <span>
-                Page {table.getState().pagination.pageIndex + 1} of{' '}
-                {table.getPageCount()}
+                Page {pageIndex + 1} of {pageCount}
               </span>
               <Sparkles className="w-4 h-4 text-yellow-500" />
             </div>
-            
           </div>
 
           {/* Navigation Buttons */}
           <div className="flex items-center space-x-2">
             <button
-              onClick={() => table.setPageIndex(0)}
-              disabled={!table.getCanPreviousPage()}
-              className="p-2 rounded-lg bg-white border-2 border-purple-300 text-purple-600 hover:bg-purple-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
-            >
-              <ChevronsLeft className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
+              onClick={handlePreviousPage}
+              disabled={!canPreviousPage}
               className="p-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
-             <input
-                type="text"
-                min="1"
-                max={table.getPageCount()}
-                defaultValue={table.getState().pagination.pageIndex + 1}
-                onChange={(e) => {
-                  const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                  if (page >= 0 && page < table.getPageCount()) {
-                    table.setPageIndex(page);
-                  }
-                }}
-                className="w-14 px-2 py-2 text-sm text-center border-2 border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 font-semibold text-purple-700"
-              />
+            
+            <input
+              type="text"
+              min="1"
+              max={pageCount}
+              value={localPageInput}
+              onChange={handlePageInputChange}
+              onBlur={handlePageInputBlur}
+              onKeyPress={handlePageInputKeyPress}
+              className="w-14 px-2 py-2 text-sm text-center border-2 border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 font-semibold text-purple-700"
+            />
+            
             <button
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
+              onClick={handleNextPage}
+              disabled={!canNextPage}
               className="p-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg"
             >
               <ChevronRight className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-              disabled={!table.getCanNextPage()}
-              className="p-2 rounded-lg bg-white border-2 border-purple-300 text-purple-600 hover:bg-purple-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
-            >
-              <ChevronsRight className="w-5 h-5" />
             </button>
           </div>
         </div>

@@ -1,11 +1,12 @@
-// TableUsageExample.tsx - Example of how to use the ChildishTable component
+// ChildListPage.tsx - Example with Server-Side Pagination
 
-import React from 'react';
-import Button from '../../../components/ui/button/button'
-import { ColumnDef } from '@tanstack/react-table';
-import { Star, Trophy, Award, Sparkles } from 'lucide-react';
-import {Table} from "../../../components/ui/table/table"
-// Example data type for children
+import React, { useState, useEffect } from 'react';
+import { ColumnDef, SortingState } from '@tanstack/react-table';
+import { Star, Trophy, Award, Sparkles, Plus } from 'lucide-react';
+import { Table } from '../../../components/ui/table/table';
+import Button from '../../../components/ui/button/button';
+import Input from '../../../components/ui/input/Input';
+
 interface Child {
   id: string;
   name: string;
@@ -17,116 +18,194 @@ interface Child {
   status: 'active' | 'inactive' | 'completed';
 }
 
-// Sample data
-const sampleChildren: Child[] = [
-  {
-    id: '1',
-    name: 'Alex Johnson',
-    age: 5,
-    therapyType: 'Speech Therapy',
-    progress: 85,
-    lastSession: '2025-10-18',
-    therapist: 'Dr. Sarah Kim',
-    status: 'active',
-  },
-  {
-    id: '2',
-    name: 'Emma Rodriguez',
-    age: 4,
-    therapyType: 'Occupational Therapy',
-    progress: 92,
-    lastSession: '2025-10-17',
-    therapist: 'Ms. Jennifer Lee',
-    status: 'active',
-  },
-  {
-    id: '3',
-    name: 'Sarah Lee',
-    age: 6,
-    therapyType: 'Speech Therapy',
-    progress: 78,
-    lastSession: '2025-10-16',
-    therapist: 'Dr. Sarah Kim',
-    status: 'active',
-  },
-  {
-    id: '4',
-    name: 'Michael Chen',
-    age: 7,
-    therapyType: 'Behavioral Therapy',
-    progress: 95,
-    lastSession: '2025-10-15',
-    therapist: 'Dr. Maria Garcia',
-    status: 'completed',
-  },
-  {
-    id: '5',
-    name: 'Olivia Smith',
-    age: 3,
-    therapyType: 'Speech Therapy',
-    progress: 65,
-    lastSession: '2025-10-14',
-    therapist: 'Dr. Sarah Kim',
-    status: 'active',
-  },
-  {
-    id: '6',
-    name: 'Liam Brown',
-    age: 5,
-    therapyType: 'Motor Skills',
-    progress: 88,
-    lastSession: '2025-10-13',
-    therapist: 'Ms. Jennifer Lee',
-    status: 'active',
-  },
-  {
-    id: '7',
-    name: 'Sophia Davis',
-    age: 4,
-    therapyType: 'Occupational Therapy',
-    progress: 72,
-    lastSession: '2025-10-12',
-    therapist: 'Dr. Maria Garcia',
-    status: 'inactive',
-  },
-  {
-    id: '8',
-    name: 'Noah Wilson',
-    age: 6,
-    therapyType: 'Speech Therapy',
-    progress: 90,
-    lastSession: '2025-10-11',
-    therapist: 'Dr. Sarah Kim',
-    status: 'active',
-  },
-  {
-    id: '9',
-    name: 'Ava Martinez',
-    age: 5,
-    therapyType: 'Behavioral Therapy',
-    progress: 83,
-    lastSession: '2025-10-10',
-    therapist: 'Dr. Maria Garcia',
-    status: 'active',
-  },
-  {
-    id: '10',
-    name: 'Ethan Anderson',
-    age: 4,
-    therapyType: 'Motor Skills',
-    progress: 76,
-    lastSession: '2025-10-09',
-    therapist: 'Ms. Jennifer Lee',
-    status: 'active',
-  },
-];
+// Mock API response interface
+interface ApiResponse {
+  data: Child[];
+  totalRows: number;
+  pageCount: number;
+  currentPage: number;
+}
 
 const ChildListPage: React.FC = () => {
-  // Define columns with custom rendering
+  const [data, setData] = useState<Child[]>([]);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(5);
+  const [totalRows, setTotalRows] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [loading, setLoading] = useState(false);
+
+  // Mock API call - Replace with your actual API
+  const fetchData = async (page: number, size: number, sort: SortingState) => {
+    setLoading(true);
+
+    try {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Mock data - In reality, this would come from your API
+      const allData: Child[] = [
+        {
+          id: '1',
+          name: 'Alex Johnson',
+          age: 5,
+          therapyType: 'Speech Therapy',
+          progress: 85,
+          lastSession: '2025-10-18',
+          therapist: 'Dr. Sarah Kim',
+          status: 'active',
+        },
+        {
+          id: '2',
+          name: 'Emma Rodriguez',
+          age: 4,
+          therapyType: 'Occupational Therapy',
+          progress: 92,
+          lastSession: '2025-10-17',
+          therapist: 'Ms. Jennifer Lee',
+          status: 'active',
+        },
+        {
+          id: '3',
+          name: 'Sarah Lee',
+          age: 6,
+          therapyType: 'Speech Therapy',
+          progress: 78,
+          lastSession: '2025-10-16',
+          therapist: 'Dr. Sarah Kim',
+          status: 'active',
+        },
+        {
+          id: '4',
+          name: 'Michael Chen',
+          age: 7,
+          therapyType: 'Behavioral Therapy',
+          progress: 95,
+          lastSession: '2025-10-15',
+          therapist: 'Dr. Maria Garcia',
+          status: 'completed',
+        },
+        {
+          id: '5',
+          name: 'Olivia Smith',
+          age: 3,
+          therapyType: 'Speech Therapy',
+          progress: 65,
+          lastSession: '2025-10-14',
+          therapist: 'Dr. Sarah Kim',
+          status: 'active',
+        },
+        {
+          id: '6',
+          name: 'Liam Brown',
+          age: 5,
+          therapyType: 'Motor Skills',
+          progress: 88,
+          lastSession: '2025-10-13',
+          therapist: 'Ms. Jennifer Lee',
+          status: 'active',
+        },
+        {
+          id: '7',
+          name: 'Sophia Davis',
+          age: 4,
+          therapyType: 'Occupational Therapy',
+          progress: 72,
+          lastSession: '2025-10-12',
+          therapist: 'Dr. Maria Garcia',
+          status: 'inactive',
+        },
+        {
+          id: '8',
+          name: 'Noah Wilson',
+          age: 6,
+          therapyType: 'Speech Therapy',
+          progress: 90,
+          lastSession: '2025-10-11',
+          therapist: 'Dr. Sarah Kim',
+          status: 'active',
+        },
+        {
+          id: '9',
+          name: 'Ava Martinez',
+          age: 5,
+          therapyType: 'Behavioral Therapy',
+          progress: 83,
+          lastSession: '2025-10-10',
+          therapist: 'Dr. Maria Garcia',
+          status: 'active',
+        },
+        {
+          id: '10',
+          name: 'Ethan Anderson',
+          age: 4,
+          therapyType: 'Motor Skills',
+          progress: 76,
+          lastSession: '2025-10-09',
+          therapist: 'Ms. Jennifer Lee',
+          status: 'active',
+        },
+      ];
+
+      // Apply sorting (in real API, this would be done server-side)
+      let sortedData = [...allData];
+      if (sort.length > 0) {
+        const { id, desc } = sort[0];
+        sortedData.sort((a, b) => {
+          const aVal = a[id as keyof Child];
+          const bVal = b[id as keyof Child];
+          if (aVal < bVal) return desc ? 1 : -1;
+          if (aVal > bVal) return desc ? -1 : 1;
+          return 0;
+        });
+      }
+
+      // Paginate (in real API, this would be done server-side)
+      const start = page * size;
+      const end = start + size;
+      const paginatedData = sortedData.slice(start, end);
+
+      // Mock API response
+      const response: ApiResponse = {
+        data: paginatedData,
+        totalRows: allData.length,
+        pageCount: Math.ceil(allData.length / size),
+        currentPage: page,
+      };
+
+      setData(response.data);
+      setTotalRows(response.totalRows);
+      setPageCount(response.pageCount);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch data when pagination or sorting changes
+  useEffect(() => {
+    fetchData(pageIndex, pageSize, sorting);
+  }, [pageIndex, pageSize, sorting]);
+
+  // Handle pagination change
+  const handlePaginationChange = (newPageIndex: number, newPageSize: number) => {
+    setPageIndex(newPageIndex);
+    setPageSize(newPageSize);
+  };
+
+  // Handle sorting change
+  const handleSortingChange = (newSorting: SortingState) => {
+    setSorting(newSorting);
+    setPageIndex(0); // Reset to first page when sorting changes
+  };
+
+  // Define columns
   const columns: ColumnDef<Child, any>[] = [
     {
       accessorKey: 'name',
       header: 'Child Name',
+      enableSorting: true,
       cell: ({ row }) => (
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold shadow-md">
@@ -142,6 +221,7 @@ const ChildListPage: React.FC = () => {
     {
       accessorKey: 'therapyType',
       header: 'Therapy Type',
+      enableSorting: true,
       cell: ({ getValue }) => {
         const type = getValue() as string;
         const colors: Record<string, string> = {
@@ -160,6 +240,7 @@ const ChildListPage: React.FC = () => {
     {
       accessorKey: 'progress',
       header: 'Progress',
+      enableSorting: true,
       cell: ({ getValue }) => {
         const progress = getValue() as number;
         return (
@@ -172,13 +253,12 @@ const ChildListPage: React.FC = () => {
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
               <div
-                className={`h-full rounded-full transition-all ${
-                  progress >= 90
-                    ? 'bg-gradient-to-r from-green-400 to-emerald-500'
-                    : progress >= 70
+                className={`h-full rounded-full transition-all ${progress >= 90
+                  ? 'bg-gradient-to-r from-green-400 to-emerald-500'
+                  : progress >= 70
                     ? 'bg-gradient-to-r from-purple-400 to-pink-500'
                     : 'bg-gradient-to-r from-yellow-400 to-orange-500'
-                }`}
+                  }`}
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -189,6 +269,7 @@ const ChildListPage: React.FC = () => {
     {
       accessorKey: 'therapist',
       header: 'Therapist',
+      enableSorting: true,
       cell: ({ getValue }) => (
         <div className="text-sm">
           <div className="font-medium text-gray-900">{getValue() as string}</div>
@@ -198,6 +279,7 @@ const ChildListPage: React.FC = () => {
     {
       accessorKey: 'lastSession',
       header: 'Last Session',
+      enableSorting: true,
       cell: ({ getValue }) => {
         const date = new Date(getValue() as string);
         return (
@@ -213,6 +295,7 @@ const ChildListPage: React.FC = () => {
     {
       accessorKey: 'status',
       header: 'Status',
+      enableSorting: true,
       cell: ({ getValue }) => {
         const status = getValue() as string;
         const statusConfig = {
@@ -250,12 +333,11 @@ const ChildListPage: React.FC = () => {
     {
       id: 'actions',
       header: 'Actions',
+      enableSorting: false,
       cell: ({ row }) => (
         <div className="flex items-center space-x-2">
-          <Button >View</Button>
-          <button className="px-3 py-1.5 bg-white border-2 border-purple-300 text-purple-600 text-xs font-semibold rounded-lg hover:bg-purple-50 transition-all">
-            Edit
-          </button>
+          <Button variant="gradient" size="xs">View</Button>
+          <Button variant="outline" size="xs">Edit</Button>
         </div>
       ),
     },
@@ -263,24 +345,36 @@ const ChildListPage: React.FC = () => {
 
   return (
     <>
-      <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-          Children Management
-        </h1>
-        <p className="text-gray-600">
-          Manage and track all children in your therapy program
-        </p>
+      <div className='flex justify-between items-center'>
+        <div className="mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+            Children Management
+          </h1>
+          <p className="text-gray-600">
+            Manage and track all children in your therapy program
+          </p>
+        </div>
+        <div className='flex gap-2'>
+          <Button icon={Plus}>New Child</Button>
+          <Input type='search' placeholder='Search...' />
+        </div>
+
       </div>
 
       <Table
-        data={sampleChildren}
+        data={data}
         columns={columns}
-        pageSize={5}
-        showSearch={true}
-        searchPlaceholder="Search by name, therapist, or therapy type..."
+        pageIndex={pageIndex}
+        pageSize={pageSize}
+        pageCount={pageCount}
+        totalRows={totalRows}
+        sorting={sorting}
+        onPaginationChange={handlePaginationChange}
+        onSortingChange={handleSortingChange}
+        pageSizeOptions={[5, 10, 20, 50]}
         emptyMessage="No children found! 🌟"
+        loading={loading}
       />
-
     </>
   );
 };
