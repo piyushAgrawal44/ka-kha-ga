@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Sparkles, Users, LineChart, Bell, FileText, Shield, Zap, Heart, Target, Calendar, Award, TrendingUp, Brain, Mic, Ear, Smile, CheckCircle2, ArrowRight, Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import WhyTherapistsChoose from './components/WhyTherapistChooseUs';
 
 export default function HomePage() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -243,6 +244,9 @@ export default function HomePage() {
                 </div>
             </section>
 
+            {/* Why Therapist Choose Us */}
+            <WhyTherapistsChoose />
+            
             {/* Benefits Section */}
             <section id="benefits" className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
                 <div className="max-w-7xl mx-auto">
@@ -300,7 +304,7 @@ export default function HomePage() {
                 <div className="max-w-4xl mx-auto">
                     <div className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl p-12 text-center shadow-2xl">
                         <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                            Ready to Transform Your Child Growth?
+                            Ready to Build Unshakeable Trust and Transform Your Child Growth?
                         </h2>
 
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">

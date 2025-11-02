@@ -5,9 +5,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import DashboardLayout from '../components/layout/layout';
 import DashboardPage from './pages/dashboard-page/dashboard';
 import { User } from '../types/app.type';
+import ChildListPage from './pages/child-list-page/chlid-list-page';
 
-// Placeholder components - You'll create these later
-const ChildrenPage = () => <div className="p-6 bg-white rounded-xl shadow-sm"><h1 className="text-2xl font-bold">Children Management</h1></div>;
 const MilestonesPage = () => <div className="p-6 bg-white rounded-xl shadow-sm"><h1 className="text-2xl font-bold">Milestones</h1></div>;
 const SessionsPage = () => <div className="p-6 bg-white rounded-xl shadow-sm"><h1 className="text-2xl font-bold">Sessions</h1></div>;
 const ReportsPage = () => <div className="p-6 bg-white rounded-xl shadow-sm"><h1 className="text-2xl font-bold">Reports</h1></div>;
@@ -68,7 +67,7 @@ const App: React.FC = () => {
           />
 
           {/* Children Management */}
-          <Route path="children" element={<ChildrenPage />} />
+          <Route path="children" element={<ChildListPage />} />
 
           {/* Milestones */}
           <Route

@@ -61,7 +61,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           >
             <div className="flex items-center space-x-3">
               {getIcon(item.icon)}
-              {!isCollapsed && <span>{item.label}</span>}
+              {!isCollapsed && <span className='line-clamp-1' title={item.label}>{item.label}</span>}
             </div>
             {!isCollapsed && hasChildren && (
               <Icons.ChevronDown
@@ -114,7 +114,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Mobile Overlay */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50  z-40 lg:hidden"
           onClick={onMobileClose}
         />
       )}
@@ -122,7 +122,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar */}
       <aside
         className={`fixed top-0 left-0 z-50 h-screen bg-white border-r border-gray-200 transition-all duration-300 ${
-          isCollapsed ? 'w-20' : 'w-64'
+          isCollapsed ? 'w-20' : 'w-70 sm:w-64'
         } ${
           isMobileOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0`}
@@ -136,7 +136,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <Icons.Sparkles className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  क-ख-ग
+                  {import.meta.env.VITE_APP_NAME}
                 </span>
               </div>
             )}
