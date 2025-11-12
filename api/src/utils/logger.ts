@@ -9,6 +9,31 @@ if (config.generateLogFile && !fs.existsSync(config.logDirectory)) {
     fs.mkdirSync(config.logDirectory, { recursive: true });
 }
 
+// Helper function to serialize errors and objects properly
+const serializeObject = (obj: any): any => {
+    if (obj instanceof Error) {
+        return {
+            name: obj.name,
+            message: obj.message,
+            stack: obj.stack,
+             ...(Object.keys(obj).length > 0 ? obj : {}) // Include any custom properties
+        };
+    }
+    
+    if (obj && typeof obj === "object") {
+        try {
+            // Try to stringify and parse to check if it's serializable
+            JSON.stringify(obj);
+            return obj;
+        } catch {
+            // If not serializable, convert to string
+            return { value: String(obj) };
+        }
+    }
+    
+    return obj;
+};
+
 // Console format
 const consoleFormat = winston.format.printf(({ level, message, timestamp, ...meta }) => {
     const metaData = Object.keys(meta).length ? ` ${JSON.stringify(meta)}` : "";
@@ -34,7 +59,7 @@ const fileTransport =
             zippedArchive: false,
             maxSize: "10m",
             maxFiles: "14d",
-            level: "debug", // capture all logs
+            level: "debug",
             format: winston.format.combine(
                 winston.format.timestamp(),
                 winston.format.json()
@@ -57,15 +82,21 @@ interface LogPayload {
 
 const createLoggerMethod =
     (level: string) =>
-        ({ message, object = {}, appendToFile = true }: LogPayload): void => {
-            console.log(typeof object,)
+        ({ message, object, appendToFile = true }: LogPayload): void => {
+            // Prepare the log data with properly serialized object
+            const logData: any = { level, message };
+            
+            if (object !== undefined) {
+                logData.data = serializeObject(object);
+            }
+
             // Always log to console
-            baseLogger.log({ level, message, ...(typeof object === "object" && object !== null ? object : { object }), });
+            baseLogger.log(logData);
 
             // Append to file if enabled + requested
             if (fileTransport && appendToFile && config.generateLogFile) {
                 // @ts-ignore
-                fileTransport.log({ level, message, ...(typeof object === "object" && object !== null ? object : { object }), });
+                fileTransport.log(logData);
             }
         };
 

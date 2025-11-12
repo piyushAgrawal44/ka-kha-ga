@@ -9,7 +9,7 @@ export class JwtUtil {
    * @param payload Data to encode in token
    * @param expiresIn Expiry time (default: 1h)
    */
-  static async generateToken(payload: JWTPayload, expiresIn: string = "1h"): Promise<string> {
+  static async generateToken(payload: JWTPayload, expiresIn: string = config.jwtTokenExpiry): Promise<string> {
     return await new SignJWT(payload)
       .setProtectedHeader({ alg: "HS256" })
       .setExpirationTime(expiresIn)

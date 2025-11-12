@@ -6,6 +6,7 @@ import compression from "compression";
 import morgan from "morgan";
 import routes from "./routes";
 import { errorHandler } from "./middlewares/errorHandler";
+import { RateLimiterMiddleware } from "./middlewares/rateLimiter";
 
 const app: Application = express();
 
@@ -15,6 +16,10 @@ app.use(cors());
 app.use(express.json());
 app.use(compression());
 app.use(morgan("dev"));
+
+
+// 🚀 Apply rate limiting before routes
+app.use(RateLimiterMiddleware.apply);
 
 // API Routes with versioning
 app.use("/api", routes);

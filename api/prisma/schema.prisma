@@ -7,10 +7,59 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum Role {
+  ADMIN
+  PARTNER
+  PARENT
+}
+
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
+  id          Int       @id @default(autoincrement())
+
+  partnerId   Int?
+  partner     User?     @relation("PartnerRelation", fields: [partnerId], references: [id])
+
+  parentId    Int?
+  parent      User?     @relation("ParentRelation", fields: [parentId], references: [id])
+
+  name        String    @db.VarChar(100)
+  email       String    @unique @db.VarChar(100)
+  password    String    @db.Text
+  role        Role
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? @db.Timestamp(6)
+
+  partners    User[]    @relation("PartnerRelation")
+  parents     User[]    @relation("ParentRelation")
+
+  partnerProfile Partner?
+  parentProfile  Parent?
+}
+
+model Partner {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @unique
+  user        User     @relation(fields: [userId], references: [id])
+
+  companyName String?  @db.VarChar(150)
+  gstNumber   String?  @db.VarChar(50)
+  address     String?  @db.VarChar(255)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Parent {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @unique
+  user        User     @relation(fields: [userId], references: [id])
+
+  schoolName  String?  @db.VarChar(150)
+  contactNo   String?  @db.VarChar(20)
+  address     String?  @db.VarChar(255)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
