@@ -1,5 +1,6 @@
 import { db } from "../config/database";
 import type { Prisma } from "@prisma/client";
+import { logger } from "../utils/logger";
 
 export class UserService {
   /**
@@ -9,13 +10,24 @@ export class UserService {
     try {
       const user = await db.user.create({ data });
       return {
-        user_id: user.id
+        userId: user.id
       };
     } catch (error) {
-      console.error("Error creating user:", error);
+      logger.error({ message: "Error creating user", object: error })
       throw new Error("Failed to create user");
     }
   }
+
+  /**
+   * Update user details
+   */
+  async updateUser(userId: number, data: Prisma.UserUpdateInput) {
+    return db.user.update({
+      where: { id: userId },
+      data,
+    });
+  }
+
 
   /**
    * 🔹 Get all users
@@ -31,7 +43,7 @@ export class UserService {
       });
       return users;
     } catch (error) {
-      console.error("Error fetching users:", error);
+      logger.error({ message: "Error fetching users", object: error })
       throw new Error("Failed to fetch users");
     }
   }
@@ -50,7 +62,7 @@ export class UserService {
       });
       return user;
     } catch (error) {
-      console.error("Error fetching user by email:", error);
+      logger.error({ message: "Error fetching user by email", object: error })
       throw new Error("Failed to fetch user by email");
     }
   }
@@ -69,7 +81,7 @@ export class UserService {
       });
       return user;
     } catch (error) {
-      console.error("Error fetching user by ID:", error);
+      logger.error({ message: "Error fetching user by ID", object: error })
       throw new Error("Failed to fetch user by ID");
     }
   }
@@ -85,7 +97,7 @@ export class UserService {
       });
       return user;
     } catch (error) {
-      console.error("Error deleting user:", error);
+      logger.error({ message: "Error deleting user", object: error })
       throw new Error("Failed to delete user");
     }
   }

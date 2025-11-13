@@ -5,9 +5,13 @@ import { logger } from "../utils/logger";
 import { PasswordUtil } from "../utils/password";
 import { UserAuthTokenPayloadType } from "../types/user";
 import { JwtUtil } from "../utils/jwt";
+import { PartnerService } from "../services/partner";
+import { ParentService } from "../services/parent";
 
 export class UserController {
     private userService = new UserService();
+    private partnerService = new PartnerService();
+    private parentService = new ParentService();
 
     async create(req: Request, res: Response) {
         try {
@@ -21,7 +25,31 @@ export class UserController {
 
             const hashedPassword = await PasswordUtil.hash(password);
 
+
             const user = await this.userService.createUser({ name, email, password: hashedPassword, role });
+
+            if (role === "PARTNER") {
+                const partner = await this.partnerService.createPartner({
+                    companyName: name,
+                    user: { connect: { id: user.userId } },
+                });
+
+                // ✅ update user.partnerId after creating partner
+                await this.userService.updateUser(user.userId, {
+                    partner: {
+                        connect: { id: partner.partnerId }
+                    }
+                });
+            }
+            if (role === "PARENT") {
+                const parent = await this.parentService.createParent({ name: name, user: { connect: { id: user.userId } } });
+                // ✅ update user.partnerId after creating partner
+                await this.userService.updateUser(user.userId, {
+                    parent: {
+                        connect: { id: parent.parentId }
+                    }
+                });
+            }
 
             return sendSuccessResponse(res, { code: 201, message: "User created successfully !", data: user })
         } catch (error: any) {
@@ -56,9 +84,9 @@ export class UserController {
             }
 
 
-            const authToken=await JwtUtil.generateToken(tokenPayload);
+            const authToken = await JwtUtil.generateToken(tokenPayload);
 
-            return sendSuccessResponse(res, {code: 200, message: "Token generation successful !", data: { token: authToken}})
+            return sendSuccessResponse(res, { code: 200, message: "Token generation successful !", data: { token: authToken } })
         } catch (error: any) {
 
         }
