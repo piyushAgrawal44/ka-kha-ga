@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import * as Icons from 'lucide-react';
 import { getNavigationForRole } from '../../config/navigation.config';
-import { NavigationItem, UserRole } from '../../types/app.type';
+import { NavigationItem } from '../../types/app.type';
+import { UserRole } from '../../types/user.type';
 
 interface SidebarProps {
   isCollapsed: boolean;

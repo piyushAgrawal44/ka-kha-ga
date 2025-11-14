@@ -1,17 +1,20 @@
 // DashboardLayout.tsx - Main Dashboard Layout Component
 
 import React, { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Navigate, Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from './sidebar';
 import Topbar from './topbar';
-import { User, BreadcrumbItem } from '../../types/app.type';
+import { BreadcrumbItem } from '../../types/app.type';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
+import LocalStorageUtil from '../../utils/local-storage';
 
 interface DashboardLayoutProps {
-  user: User;
   breadcrumbs?: BreadcrumbItem[];
 }
 
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({ user, breadcrumbs }) => {
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ breadcrumbs }) => {
+  const { user } = useSelector((state: RootState) => state.auth);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const navigate = useNavigate();
@@ -19,6 +22,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ user, breadcrumbs }) 
   const handleLogout = () => {
     // Add your logout logic here (clear tokens, etc.)
     console.log('Logging out...');
+    const LS = new LocalStorageUtil();
+    LS.logoutUser();
     // Redirect to login
     navigate('/login');
   };
@@ -35,6 +40,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ user, breadcrumbs }) 
     setIsMobileSidebarOpen(false);
   };
 
+  if (!user) return <Navigate to="/login" />
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
       {/* Sidebar */}
@@ -48,9 +55,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ user, breadcrumbs }) 
 
       {/* Main Content Area */}
       <div
-        className={`transition-all duration-300 ${
-          isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'
-        }`}
+        className={`transition-all duration-300 ${isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'
+          }`}
       >
         {/* Topbar */}
         <Topbar

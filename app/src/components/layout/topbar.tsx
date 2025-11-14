@@ -5,7 +5,8 @@ import {
   Menu, Bell, Search, User, Settings, LogOut, 
   ChevronDown, Moon, Sun 
 } from 'lucide-react';
-import { User as UserType, NotificationItem, BreadcrumbItem } from '../../types/app.type';
+import { NotificationItem, BreadcrumbItem } from '../../types/app.type';
+import { UserType } from '../../types/user.type';
 
 interface TopbarProps {
   onMobileMenuToggle: () => void;

@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { ColumnDef, SortingState } from '@tanstack/react-table';
 import { Star, Trophy, Award, Sparkles, Plus } from 'lucide-react';
-import { Table } from '../../../components/ui/table/table';
-import Button from '../../../components/ui/button/button';
-import Input from '../../../components/ui/input/Input';
+import { Table } from '../../components/ui/table/table';
+import Button from '../../components/ui/button/button';
+import Input from '../../components/ui/input/Input';
 
 interface Child {
   id: string;

@@ -12,13 +12,13 @@ import {
   ArrowDown,
   MoreVertical,
 } from 'lucide-react';
-import { UserRole } from '../../../types/app.type';
 
 interface DashboardPageProps {
-  userRole: UserRole;
 }
 
-const DashboardPage: React.FC<DashboardPageProps> = ({ userRole }) => {
+const DashboardPage: React.FC<DashboardPageProps> = () => {
+
+
   // Sample data - Replace with actual API calls
   const stats = [
     {

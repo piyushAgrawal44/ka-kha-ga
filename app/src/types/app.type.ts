@@ -1,15 +1,8 @@
 // types.ts - Central type definitions for the admin panel
 
-export type UserRole = 'admin' | 'therapist' | 'parent';
+import { UserRole } from "./user.type";
 
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-  avatar?: string;
-  organizationId?: string;
-}
+
 
 export interface NavigationItem {
   id: string;
