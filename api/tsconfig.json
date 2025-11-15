@@ -19,7 +19,6 @@
     "rootDir": "./",
     "outDir": "dist",
     "strict": true,
-    "esModuleInterop": true,
     "allowSyntheticDefaultImports":true
   }
 }
