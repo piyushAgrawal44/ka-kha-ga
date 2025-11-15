@@ -7,6 +7,6 @@ export default defineConfig({
   },
   engine: "classic",
   datasource: {
-    url:"mysql://root:@localhost:3306/ka_kha_ga",
+    url: env("DATABASE_URL"),
   },
 });
