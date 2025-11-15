@@ -12,7 +12,6 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "vercel-build": "npm run prisma:generate && prisma migrate deploy && npm run build"
-
   },
   "author": "Developer Bowl Team",
   "license": "ISC",
@@ -20,7 +19,6 @@
     "@types/compression": "^1.8.1",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
-    "@types/helmet": "^0.0.48",
     "@types/morgan": "^1.9.10",
     "@types/node": "^24.10.0",
     "nodemon": "^3.1.10",
