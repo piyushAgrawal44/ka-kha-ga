@@ -1,7 +1,7 @@
 import express from "express";
 import type { Application } from "express"; 
 import cors from "cors";
-// import helmet from "helmet";
+import helmet from "helmet";
 import compression from "compression";
 import morgan from "morgan";
 import routes from "./routes/index.js";
@@ -12,7 +12,7 @@ import { config } from "./config/index.js";
 const app: Application = express();
 
 // Security & Middleware
-// app.use(helmet());
+app.use(helmet());
 app.use(cors({
     origin: config.corsOrigin, 
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
