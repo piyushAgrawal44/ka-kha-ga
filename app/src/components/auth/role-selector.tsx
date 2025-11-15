@@ -3,6 +3,7 @@
 import React from 'react';
 import { Heart, Stethoscope, Sparkles } from 'lucide-react';
 import { UserRole } from '../../types/user.type';
+import { useTranslation } from 'react-i18next';
 
 interface RoleSelectorProps {
   value: UserRole | '';
@@ -15,19 +16,21 @@ export const RoleSelector: React.FC<RoleSelectorProps> = ({
   onChange,
   error,
 }) => {
+   const { t: varnmala } = useTranslation("common");
+  const { t: authVarnmala } = useTranslation("auth");
   const roles = [
     {
       value: 'PARTNER' as UserRole,
-      label: 'Therapist/Doctor',
-      description: 'I provide therapy services',
+      label: authVarnmala('therapist_doctor'),
+      description:  authVarnmala('therapist_desc'),
       icon: Stethoscope,
       gradient: 'from-purple-400 to-pink-400',
       bgGradient: 'from-purple-50 to-pink-50',
     },
     {
       value: 'PARENT' as UserRole,
-      label: 'Parent',
-      description: "I'm a parent/guardian",
+      label: authVarnmala('parent'),
+      description: authVarnmala("parent_desc"),
       icon: Heart,
       gradient: 'from-pink-400 to-rose-400',
       bgGradient: 'from-pink-50 to-rose-50',
@@ -38,7 +41,7 @@ export const RoleSelector: React.FC<RoleSelectorProps> = ({
     <div className="space-y-3">
       <label className=" text-sm font-bold text-purple-800 flex items-center space-x-2">
         <Sparkles className="w-4 h-4 text-yellow-500" />
-        <span>I am a...</span>
+        <span>{authVarnmala('i_am')}</span>
       </label>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {roles.map((role) => {

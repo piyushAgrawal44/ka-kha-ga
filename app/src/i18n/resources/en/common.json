@@ -1,0 +1,11 @@
+{
+  "welcome": "Welcome",
+  "logout": "Logout",
+  "email_field_label": "Email Address",
+  "name_field_label": "Full Name",
+  "login_button_label": "Login",
+  "login_button_loading": "Logging in...",
+  "register_button_label": "Register",
+  "back_button_label": "Back",
+  "password_field_label": "Password"
+}

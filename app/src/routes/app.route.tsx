@@ -31,6 +31,6 @@ export const appRoutes = [
     // Catch-all for 404
     {
         path: "*",
-        element: <ErrorPage />,
+        element: <ErrorPage  /> 
     },
 ];

@@ -4,7 +4,8 @@ class LocalStorageUtil {
 
         if (!stringifyObj) {
             this.logoutUser();
-            throw Error("Token expired ! Please login again");
+            console.log("Token not found ! Please login again");
+            return null;
         }
 
         try {
@@ -12,7 +13,25 @@ class LocalStorageUtil {
         } catch (error) {
             console.log(error);
             this.logoutUser();
-            throw Error("Something went wrong while getting user details ! Please login again.");
+           return null;
+        }
+    }
+
+    getAuthToken() {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            this.logoutUser();
+            console.log("Token not found ! Please login again");
+            return null;
+        }
+
+        try {
+            return token;
+        } catch (error) {
+            console.log(error);
+            this.logoutUser();
+            return null;
         }
     }
 

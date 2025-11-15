@@ -1,0 +1,11 @@
+{
+  "welcome": "Welcome",
+  "logout": "Logout",
+  "email_field_label": "ईमेल",
+  "name_field_label": "नाम",
+  "login_button_label": "लॉगिन करे ",
+  "login_button_loading": "लॉगिन करे...",
+  "register_button_label": "रजिस्टर करे ",
+  "back_button_label": "वापिस",
+  "password_field_label": "पासवर्ड"
+}

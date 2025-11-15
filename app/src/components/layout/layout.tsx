@@ -43,7 +43,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ breadcrumbs }) => {
   if (!user) return <Navigate to="/login" />
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-100 to-yellow-100">
       {/* Sidebar */}
       <Sidebar
         isCollapsed={isSidebarCollapsed}

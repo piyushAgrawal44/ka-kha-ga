@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Menu, Bell, Search, User, Settings, LogOut, 
-  ChevronDown, Moon, Sun 
+  ChevronDown
 } from 'lucide-react';
 import { NotificationItem, BreadcrumbItem } from '../../types/app.type';
 import { UserType } from '../../types/user.type';
@@ -139,25 +139,13 @@ const Topbar: React.FC<TopbarProps> = ({
             <Search className="w-5 h-5 text-gray-700" />
           </button>
 
-          {/* Dark Mode Toggle */}
-          <button
-            onClick={() => setIsDarkMode(!isDarkMode)}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            {isDarkMode ? (
-              <Sun className="w-5 h-5 text-gray-700" />
-            ) : (
-              <Moon className="w-5 h-5 text-gray-700" />
-            )}
-          </button>
-
           {/* Notifications */}
           <div className="relative" ref={notificationRef}>
             <button
               onClick={() => setShowNotifications(!showNotifications)}
               className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
             >
-              <Bell className="w-5 h-5 text-gray-700" />
+              <Bell className="w-7 h-7 text-gray-700" />
               {unreadCount > 0 && (
                 <span className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
                   {unreadCount}

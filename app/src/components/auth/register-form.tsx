@@ -6,6 +6,7 @@ import { registerSchema, RegisterFormData } from '../../validations/auth.validat
 import InputField from './input-field';
 import RoleSelector from './role-selector';
 import { UserRole } from '../../types/user.type';
+import { useTranslation } from 'react-i18next';
 
 interface RegisterFormProps {
   onSubmit: (data: RegisterFormData) => void;
@@ -18,6 +19,9 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
   onToggleMode,
   loading = false,
 }) => {
+
+  const { t: varnmala } = useTranslation("common");
+  const { t: authVarnmala } = useTranslation("auth");
   const [step, setStep] = useState(1);
 
   const {
@@ -46,7 +50,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
       {/* -------------------- STEP 1 -------------------- */}
       {step === 1 && (
         <>
-          <h2 className="text-xl font-bold text-center">Choose Your Identity</h2>
+          <h2 className="text-xl font-bold text-center">{authVarnmala('choose_identity')}</h2>
 
           <Controller
             name="role"
@@ -65,7 +69,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
             onClick={goNext}
             className="w-full bg-purple-600 text-white py-3 rounded-xl font-bold hover:bg-purple-700 transition-all"
           >
-            Continue →
+            {authVarnmala('continue')}
           </button>
         </>
       )}
@@ -74,7 +78,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
       {step === 2 && (
         <>
           <InputField
-            label="Full Name"
+            label={varnmala("name_field_label")}
             type="text"
             placeholder="Enter your name"
             icon={User}
@@ -83,7 +87,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
           />
 
           <InputField
-            label="Email Address"
+            label={varnmala("email_field_label")}
             type="email"
             placeholder="your@email.com"
             icon={Mail}
@@ -92,7 +96,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
           />
 
           <InputField
-            label="Password"
+            label={varnmala("password_field_label")}
             type="password"
             placeholder="Create a strong password"
             icon={Lock}
@@ -106,7 +110,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
               onClick={() => setStep(1)}
               className="px-4 py-2 text-gray-700 font-semibold hover:underline"
             >
-              ← Back
+              ← {varnmala("back_button_label")}
             </button>
 
             <button
@@ -117,12 +121,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
               {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>Creating...</span>
+                  <span>{varnmala("register_button_label")}...</span>
                 </>
               ) : (
                 <>
                   <UserPlus className="w-5 h-5" />
-                  <span>Create Account</span>
+                  <span>{varnmala("register_button_label")}</span>
                 </>
               )}
             </button>
@@ -133,13 +137,13 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
       {/* Toggle Login */}
       <div className="text-center pt-4">
         <p className="text-gray-600 text-sm">
-          Already have an account?{' '}
+          {authVarnmala("existing_user")}{' '}
           <button
             type="button"
             onClick={onToggleMode}
             className="text-purple-600 font-bold hover:text-purple-800 transition-colors"
           >
-            Login here! 🎯
+            {varnmala("login_button_label")} 🎯
           </button>
         </p>
       </div>

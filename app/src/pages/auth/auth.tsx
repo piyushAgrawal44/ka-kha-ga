@@ -11,11 +11,15 @@ import { LoginFormData, RegisterFormData } from '../../validations/auth.validati
 import LoginForm from '../../components/auth/login-form';
 import RegisterForm from '../../components/auth/register-form';
 import AuthDecorations from '../../components/auth/auth-decorations';
+import { useTranslation } from 'react-i18next';
+
 
 type AuthMode = 'login' | 'register';
 
 export const AuthPage: React.FC = () => {
+  const { t: varnmala } = useTranslation("auth");
   const [mode, setMode] = useState<AuthMode>('login');
+  
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -146,24 +150,28 @@ export const AuthPage: React.FC = () => {
               <Sparkles className="w-8 h-8 text-white" fill="white" />
             </div>
             <h1 className="text-4xl font-black text-gray-900 mb-2">
-              {mode === 'login' ? 'Welcome Back!' : 'Join Us!'}
+              {mode === 'login' ? varnmala('login_welcome') : varnmala('register_welcome')}
             </h1>
             <p className="text-gray-600 font-semibold">
               {mode === 'login'
-                ? 'Login to continue your journey'
-                : 'Create your account to get started'}
+                ? varnmala('login_subheading')
+                : varnmala('register_subheading')}
             </p>
 
             {/* Mode Indicator */}
             <div className="flex items-center justify-center space-x-2 mt-4">
+              <button type='button' onClick={()=>{setMode("login")}}>
               <div
                 className={`h-2 w-2 rounded-full ${mode === 'login' ? 'bg-purple-500' : 'bg-gray-300'
                   }`}
-              />
-              <div
-                className={`h-2 w-2 rounded-full ${mode === 'register' ? 'bg-pink-500' : 'bg-gray-300'
-                  }`}
-              />
+                  />
+                  </button>
+              <button type='button' onClick={()=>{setMode("register")}}>
+                <div
+                  className={`h-2 w-2 rounded-full ${mode === 'register' ? 'bg-pink-500' : 'bg-gray-300'
+                    }`}
+                />
+              </button>
             </div>
           </div>
 

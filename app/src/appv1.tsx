@@ -1,19 +1,58 @@
 
 import { BrowserRouter, useRoutes } from "react-router-dom";
 import { appRoutes } from "./routes/app.route";
-import { Provider } from "react-redux";
-import { store } from "./store/store";
+import { Provider, useDispatch, useSelector } from "react-redux";
+import { RootState, store } from "./store/store";
 import { ToastContainer } from "react-toastify";
+import { setCredentials } from "./store/slices/auth.slice";
+import { useEffect, useState } from "react";
+import LocalStorageUtil from "./utils/local-storage";
+import PageLoader from "./components/ui/loader/page-loader";
+import ErrorBoundary from "./components/error-boundary/error-boundary";
+import "./i18n";
+import LanguageSelector from "./components/language-switcher";
 
 const AppRoutes = () => useRoutes(appRoutes);
 
-const App = () => (
-  <BrowserRouter>
-    <Provider store={store}>
+const MainComponent = () => {
+  const { user:loggedUser } = useSelector((state: RootState) => state.auth);
+  const [appInitialized, setAppInitialized] = useState(false);
+  const dispatch = useDispatch();
+  useEffect(() => {
 
-      <AppRoutes />
+    if(loggedUser?.role){
+      setAppInitialized(true);
+      return;
+    }
+
+    const LS = new LocalStorageUtil();
+    const token = LS.getAuthToken();
+    const user = LS.getUserObject();
+
+    if (token && user) {
+      dispatch(
+        setCredentials({
+          token: token,
+          user: user,
+        })
+      );
+    } else {
+      // if user is not logged in then initialized immediately
+      setAppInitialized(true)
+    }
+  }, [loggedUser]);
+
+
+  return (
+    <>
+      {appInitialized ? (<AppRoutes />) : (<>
+      <PageLoader loading={true}>
+        <div className="w-full h-full"></div>
+      </PageLoader>
+      </>)}
+
       <ToastContainer
-        position="top-right"
+        position="bottom-right"
         autoClose={3000}
         hideProgressBar={false}
         newestOnTop={false}
@@ -22,10 +61,21 @@ const App = () => (
         draggable
         theme="colored"
       />
-    </Provider>
+      <LanguageSelector />
+    </>
+  )
+}
 
-
-  </BrowserRouter>
-);
+const App = () => {
+  return (
+    <BrowserRouter>
+      <Provider store={store}>
+        <ErrorBoundary>
+        <MainComponent />
+        </ErrorBoundary>
+      </Provider>
+    </BrowserRouter>
+  )
+};
 
 export default App;

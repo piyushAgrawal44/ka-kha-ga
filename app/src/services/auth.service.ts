@@ -3,8 +3,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { AuthResponse, LoginRequest, RegisterRequest } from '../types/auth.type';
 import { LOGIN_API, REGISTER_API } from '../constants/api-url.contant';
+import { APP_ENV } from '../config/app.config';
 
-const API_BASE_URL = import.meta.env.VITE_APP_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = APP_ENV.backendApiUrl;
 
 export const authApi = createApi({
   reducerPath: 'authApi',

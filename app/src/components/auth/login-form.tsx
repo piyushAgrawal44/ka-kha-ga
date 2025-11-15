@@ -6,6 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Mail, Lock, LogIn, Loader2 } from 'lucide-react';
 import { loginSchema, LoginFormData } from '../../validations/auth.validation';
 import InputField from './input-field';
+import { useTranslation } from 'react-i18next';
 
 interface LoginFormProps {
   onSubmit: (data: LoginFormData) => void;
@@ -25,11 +26,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   } = useForm<LoginFormData>({
     resolver: yupResolver(loginSchema),
   });
+  const { t: varnmala } = useTranslation("common");
+  const { t: authVarnmala } = useTranslation("auth");
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <InputField
-        label="Email Address"
+        label={varnmala("email_field_label")}
         type="email"
         placeholder="your@email.com"
         icon={Mail}
@@ -38,7 +41,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
       />
 
       <InputField
-        label="Password"
+        label={varnmala("password_field_label")}
         type="password"
         placeholder="••••••••"
         icon={Lock}
@@ -54,25 +57,25 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         {loading ? (
           <>
             <Loader2 className="w-6 h-6 animate-spin" />
-            <span>Logging in...</span>
+            <span>{varnmala("login_button_loading")}</span>
           </>
         ) : (
           <>
             <LogIn className="w-6 h-6" />
-            <span>Login</span>
+            <span>{varnmala('login_button_label')}</span>
           </>
         )}
       </button>
 
       <div className="text-center pt-4">
         <p className="text-gray-600 text-sm">
-          Don't have an account?{' '}
+          {authVarnmala('new_user')}{' '}
           <button
             type="button"
             onClick={onToggleMode}
             className="text-purple-600 font-bold hover:text-purple-800 transition-colors"
           >
-            Register here! ✨
+           {varnmala('register_button_label')} ✨
           </button>
         </p>
       </div>
