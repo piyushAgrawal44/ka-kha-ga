@@ -1,7 +1,6 @@
 import winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import fs from "fs";
-import path from "path";
 import { config } from "../config/index.js";
 
 // Ensure logs directory exists (only if file logging enabled)

@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { UserAuthTokenPayloadType } from "../types/user";
-import { JwtUtil } from "../utils/jwt";
-import { sendErrorResponse } from "../utils/response";
-import { logger } from "../utils/logger";
+import { UserAuthTokenPayloadType } from "../types/user.js";
+import { JwtUtil } from "../utils/jwt.js";
+import { sendErrorResponse } from "../utils/response.js";
+import { logger } from "../utils/logger.js";
 
 export interface AuthenticatedRequest extends Request {
     user?: UserAuthTokenPayloadType;

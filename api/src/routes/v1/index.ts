@@ -1,6 +1,6 @@
 import { Router } from "express";
-import welcomeRoute from "./welcome";
-import userRoute from "./user/index";
+import welcomeRoute from "./welcome.js";
+import userRoute from "./user/index.js";
 const router = Router();
 
 router.use("/welcome", welcomeRoute);

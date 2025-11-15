@@ -1,5 +1,5 @@
 import { SignJWT, jwtVerify, JWTPayload } from "jose";
-import { config } from "../config";
+import { config } from "../config/index.js";
 
 export class JwtUtil {
   private static secret = new TextEncoder().encode(config.jwtSecret);

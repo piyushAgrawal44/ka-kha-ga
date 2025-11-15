@@ -1,6 +1,6 @@
-import { db } from "../config/database";
+import { db } from "../config/database.js";
 import type { Prisma } from "@prisma/client";
-import { logger } from "../utils/logger";
+import { logger } from "../utils/logger.js";
 
 export class ParentService {
     /**

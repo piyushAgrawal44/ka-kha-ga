@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import { UserService } from "../services/user";
-import { sendErrorResponse, sendSuccessResponse } from "../utils/response";
-import { logger } from "../utils/logger";
-import { PasswordUtil } from "../utils/password";
-import { UserAuthTokenPayloadType } from "../types/user";
-import { JwtUtil } from "../utils/jwt";
-import { PartnerService } from "../services/partner";
-import { ParentService } from "../services/parent";
+import { UserService } from "../services/user.js";
+import { sendErrorResponse, sendSuccessResponse } from "../utils/response.js";
+import { logger } from "../utils/logger.js";
+import { PasswordUtil } from "../utils/password.js";
+import { UserAuthTokenPayloadType } from "../types/user.js";
+import { JwtUtil } from "../utils/jwt.js";
+import { PartnerService } from "../services/partner.js";
+import { ParentService } from "../services/parent.js";
 
 export class UserController {
     private userService = new UserService();

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { sendSuccessResponse } from "../../utils/response";
-import { config } from "../../config";
+import { sendSuccessResponse } from "../../utils/response.js";
+import { config } from "../../config/index.js";
 
 const router = Router();
 
