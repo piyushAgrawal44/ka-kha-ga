@@ -1,6 +1,6 @@
 
-import { BrowserRouter, useRoutes } from "react-router-dom";
-import { appRoutes } from "./routes/app.route";
+import { BrowserRouter, RouteObject, useRoutes } from "react-router-dom";
+import {  appRoutes, AppRouteType } from "./routes/app.route";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import { RootState, store } from "./store/store";
 import { ToastContainer } from "react-toastify";
@@ -11,16 +11,33 @@ import PageLoader from "./components/ui/loader/page-loader";
 import ErrorBoundary from "./components/error-boundary/error-boundary";
 import "./i18n";
 import LanguageSelector from "./components/language-switcher";
+import { RouteGuard } from "./components/route-guard/route-guard";
 
-const AppRoutes = () => useRoutes(appRoutes);
+const AppRoutes =  ({ routes }: { routes: AppRouteType[] }) => {
+  const convertRoutes = (routes: AppRouteType[]): RouteObject[] => {
+    return routes.map((r) => ({
+      path: r.path,
+      element: (
+        <RouteGuard
+          element={r.element}
+          protected={r.protected}
+          roles={r.roles}
+        />
+      ),
+      children: r.children ? convertRoutes(r.children) : undefined,
+    }));
+  };
+
+  return useRoutes(convertRoutes(routes));
+};
 
 const MainComponent = () => {
-  const { user:loggedUser } = useSelector((state: RootState) => state.auth);
+  const { user: loggedUser } = useSelector((state: RootState) => state.auth);
   const [appInitialized, setAppInitialized] = useState(false);
   const dispatch = useDispatch();
   useEffect(() => {
 
-    if(loggedUser?.role){
+    if (loggedUser?.role) {
       setAppInitialized(true);
       return;
     }
@@ -45,10 +62,10 @@ const MainComponent = () => {
 
   return (
     <>
-      {appInitialized ? (<AppRoutes />) : (<>
-      <PageLoader loading={true}>
-        <div className="w-full h-full"></div>
-      </PageLoader>
+      {appInitialized ? (<AppRoutes routes={appRoutes} />) : (<>
+        <PageLoader loading={true}>
+          <div className="w-full h-full"></div>
+        </PageLoader>
       </>)}
 
       <ToastContainer
@@ -71,7 +88,7 @@ const App = () => {
     <BrowserRouter>
       <Provider store={store}>
         <ErrorBoundary>
-        <MainComponent />
+          <MainComponent />
         </ErrorBoundary>
       </Provider>
     </BrowserRouter>

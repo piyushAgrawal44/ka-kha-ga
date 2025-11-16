@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 
 const ErrorPage = () => {
   return (
@@ -6,12 +7,13 @@ const ErrorPage = () => {
         <h1 className="text-5xl font-bold mb-4">Oops!</h1>
         <p className="text-gray-600 text-lg mb-6">Something went wrong.</p>
 
-        <a
-          href="/"
+        <Link
+          to="/"
+          replace
           className="px-5 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
         >
-          Go Home
-        </a>
+          Go to Home
+        </Link>
       </div>
     </div>
   );

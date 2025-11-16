@@ -88,7 +88,7 @@ export const AuthPage: React.FC = () => {
 
       if (response.success) {
         // Success
-        toast.success(response.message || 'Account created successfully! 🎉');
+        toast.success('Account created successfully! 🎉');
 
         // Switch to login mode
         setTimeout(() => {

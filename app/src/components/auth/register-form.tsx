@@ -44,8 +44,18 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
     setStep(2);
   };
 
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.key === "Enter") {
+      if (step == 1) {
+        if (!selectedRole) return;
+        setStep(2);
+      }
+    }
+  };
+  
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+    <form onSubmit={handleSubmit(onSubmit)} onKeyDown={handleKeyDown} className="space-y-5">
 
       {/* -------------------- STEP 1 -------------------- */}
       {step === 1 && (
