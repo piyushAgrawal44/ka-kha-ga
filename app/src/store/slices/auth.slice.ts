@@ -2,6 +2,7 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AuthState } from '../../types/auth.type';
+import LocalStorageUtil from '../../utils/local-storage';
 
 const initialState: AuthState = {
   user: null,
@@ -24,17 +25,15 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.isAuthenticated = true;
-      localStorage.setItem('token', action.payload.token);
-      if (action.payload.user) {
-        localStorage.setItem('user', JSON.stringify(action.payload.user));
-      }
+      const LS= new LocalStorageUtil();
+      LS.setToken(action.payload.token);
     },
     logout: (state) => {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      const LS= new LocalStorageUtil();
+      LS.logoutUser();
     },
   },
 });

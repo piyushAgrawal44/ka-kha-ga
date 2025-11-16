@@ -12,6 +12,7 @@ import LoginForm from '../../components/auth/login-form';
 import RegisterForm from '../../components/auth/register-form';
 import AuthDecorations from '../../components/auth/auth-decorations';
 import { useTranslation } from 'react-i18next';
+import LocalStorageUtil from '../../utils/local-storage';
 
 
 type AuthMode = 'login' | 'register';
@@ -36,16 +37,11 @@ export const AuthPage: React.FC = () => {
 
         // Store credentials
         if (response.data?.token) {
-          const decodeJWT = (token: string) => {
-            const base64Url = token.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const decoded = JSON.parse(atob(base64));
-            return decoded;
-          };
+         
 
-          // Usage:
+          const LS=new LocalStorageUtil();
           const token = response.data?.token;
-          const user = decodeJWT(token);
+          const user = LS.decodeJwtPayload(token);
           dispatch(
             setCredentials({
               token: response.data.token,

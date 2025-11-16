@@ -37,6 +37,7 @@ const MainComponent = () => {
   const dispatch = useDispatch();
   useEffect(() => {
 
+
     if (loggedUser?.role) {
       setAppInitialized(true);
       return;

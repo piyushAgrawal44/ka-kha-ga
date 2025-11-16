@@ -1,5 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { UserRole, UserType } from "../../types/user.type";
+import LocalStorageUtil from "../../utils/local-storage";
 
 interface Props {
   element: React.ReactNode;
@@ -8,9 +9,8 @@ interface Props {
 }
 
 export function RouteGuard({ element, protected: isProtected, roles }: Props) {  
-  const user: UserType | null = JSON.parse(
-    localStorage.getItem("user") || "null"
-  );
+  const LS=new LocalStorageUtil();
+  const user= LS.getUserObject();
 
   // No auth needed
   if (!isProtected) return element;
