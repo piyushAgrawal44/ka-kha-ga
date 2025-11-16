@@ -9,9 +9,7 @@
     "build": "tsc",
     "start": "node dist/src/app.js",
     "dev": "nodemon --watch src --ext ts --exec tsx src/index.ts",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate:deploy": "prisma migrate deploy",
-    "vercel-build": "npm run prisma:generate && prisma migrate deploy && npm run build"
+    "vercel-build": "npm run build"
   },
   "author": "Developer Bowl Team",
   "license": "ISC",
