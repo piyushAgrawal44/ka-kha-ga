@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { UserRole, UserType } from "../../types/user.type";
-import LocalStorageUtil from "../../utils/local-storage";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 
 interface Props {
   element: React.ReactNode;
@@ -9,9 +10,8 @@ interface Props {
 }
 
 export function RouteGuard({ element, protected: isProtected, roles }: Props) {  
-  const LS=new LocalStorageUtil();
-  const user= LS.getUserObject();
-
+  const { user } = useSelector((state: RootState) => state.auth);
+  
   // No auth needed
   if (!isProtected) return element;
 

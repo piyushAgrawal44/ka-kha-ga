@@ -12,7 +12,6 @@ import LoginForm from '../../components/auth/login-form';
 import RegisterForm from '../../components/auth/register-form';
 import AuthDecorations from '../../components/auth/auth-decorations';
 import { useTranslation } from 'react-i18next';
-import LocalStorageUtil from '../../utils/local-storage';
 
 
 type AuthMode = 'login' | 'register';
@@ -39,9 +38,8 @@ export const AuthPage: React.FC = () => {
         if (response.data?.token) {
          
 
-          const LS=new LocalStorageUtil();
           const token = response.data?.token;
-          const user = LS.decodeJwtPayload(token);
+          const user = response.data?.user;
           dispatch(
             setCredentials({
               token: response.data.token,

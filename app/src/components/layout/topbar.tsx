@@ -1,12 +1,13 @@
 // Topbar.tsx - Top Navigation Bar Component
 
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  Menu, Bell, Search, User, Settings, LogOut, 
+import {
+  Menu, Bell, Search, User, Settings, LogOut,
   ChevronDown
 } from 'lucide-react';
 import { NotificationItem, BreadcrumbItem } from '../../types/app.type';
 import { UserType } from '../../types/user.type';
+import { TextUtilInstance } from '../../utils/text';
 
 interface TopbarProps {
   onMobileMenuToggle: () => void;
@@ -166,9 +167,8 @@ const Topbar: React.FC<TopbarProps> = ({
                   {notifications.map((notification) => (
                     <div
                       key={notification.id}
-                      className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${
-                        !notification.read ? 'bg-purple-50' : ''
-                      }`}
+                      className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${!notification.read ? 'bg-purple-50' : ''
+                        }`}
                     >
                       <div className="flex items-start space-x-3">
                         <div className={`p-2 rounded-lg ${getNotificationColor(notification.type)}`}>
@@ -223,11 +223,8 @@ const Topbar: React.FC<TopbarProps> = ({
                       {user.name.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900">{user.name}</p>
-                      <p className="text-sm text-gray-500">{user.email}</p>
-                      <span className="inline-block mt-1 px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded-full capitalize">
-                        {user.role}
-                      </span>
+                      <p className="font-semibold text-gray-900" title={user.name}>{TextUtilInstance.getSubstring({ str: user.name })}</p>
+                      <p className="text-sm text-gray-500 max-w-2.5  text-ellipsis text-wrap" title={user.email}>{TextUtilInstance.getSubstring({ str: user.email })}</p>
                     </div>
                   </div>
                 </div>

@@ -5,9 +5,10 @@ import { Navigate, Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from './sidebar';
 import Topbar from './topbar';
 import { BreadcrumbItem } from '../../types/app.type';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import LocalStorageUtil from '../../utils/local-storage';
+import { logout } from '../../store/slices/auth.slice';
 
 interface DashboardLayoutProps {
   breadcrumbs?: BreadcrumbItem[];
@@ -15,13 +16,13 @@ interface DashboardLayoutProps {
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ breadcrumbs }) => {
   const { user } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Add your logout logic here (clear tokens, etc.)
-    console.log('Logging out...');
+    dispatch(logout());
     const LS = new LocalStorageUtil();
     LS.logoutUser();
     // Redirect to login

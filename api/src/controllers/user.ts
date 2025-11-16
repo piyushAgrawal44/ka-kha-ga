@@ -76,17 +76,15 @@ export class UserController {
 
             // generate auth token
             const tokenPayload: UserAuthTokenPayloadType = {
-                user_id: existing.id,
-                name: existing.name,
-                role: existing.role,
-                partnerId: existing.parentId,
-                parentId: existing.parentId
+                userId: existing.id,
+                name: existing.name
             }
+
 
 
             const authToken = await JwtUtil.generateToken(tokenPayload);
 
-            return sendSuccessResponse(res, { code: 200, message: "Token generation successful !", data: { token: authToken } })
+            return sendSuccessResponse(res, { code: 200, message: "Token generation successful !", data: { token: authToken, user: existing } })
         } catch (error: any) {
 
         }
@@ -96,4 +94,43 @@ export class UserController {
         const users = await this.userService.getAllUsers();
         return sendSuccessResponse(res, { code: 200, message: "User list fetched successfully !", data: users })
     }
+
+    async getUserDetail(req: Request, res: Response) {
+        try {
+            // req.user comes from JWT decoded payload
+            const userId = req?.user?.userId;
+
+            const user = await this.userService.getUserById(userId);
+
+            if (!user) {
+                return sendErrorResponse(res, {
+                    code: 404,
+                    message: "User not found",
+                    error: "Invalid user"
+                });
+            }
+
+            // Never send sensitive info (password, tokens)
+            return sendSuccessResponse(res, {
+                code: 200,
+                message: "Authenticated user fetched successfully",
+                data: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    partnerId: user.partnerId,
+                    parentId: user.parentId
+                }
+            });
+        } catch (error) {
+            logger.error({ message: "Failed to fetch authenticated user", object: error })
+            return sendErrorResponse(res, {
+                code: 500,
+                message: "Failed to fetch authenticated user",
+                error: "Failed to fetch authenticated user",
+            });
+        }
+    }
+
 }

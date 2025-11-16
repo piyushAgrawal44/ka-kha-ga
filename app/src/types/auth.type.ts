@@ -16,15 +16,9 @@ export interface AuthResponse {
   success: boolean;
   code: number;
   message: string;
-  data: {
-    userId?: number;
-    token?: string;
-    user?: {
-      id: number;
-      name: string;
-      email: string;
-      role: UserRole;
-    };
+  data?: {
+    token: string;
+    user: UserType;
   } | null;
   error: string | { name: string; message: string } | null;
 }

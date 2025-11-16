@@ -2,9 +2,6 @@ import { Role } from "@prisma/client";
 
 export type UserRoleType= Role
 export type UserAuthTokenPayloadType={
-    user_id: number;
+    userId: number;
     name: string;
-    role: UserRoleType;
-    partnerId: number | null;
-    parentId: number | null;
 }
