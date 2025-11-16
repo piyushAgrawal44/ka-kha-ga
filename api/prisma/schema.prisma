@@ -1,65 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
+model parent {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique(map: "Parent_userId_key")
+  contactNo String?  @db.VarChar(20)
+  address   String?  @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  name      String?  @db.VarChar(150)
+  user      user     @relation(fields: [userId], references: [id], map: "Parent_userId_fkey")
 }
 
-enum Role {
-  ADMIN
-  PARTNER
-  PARENT
-}
-
-model User {
-  id          Int       @id @default(autoincrement())
-
-  partnerId   Int?
-  partner     User?     @relation("PartnerRelation", fields: [partnerId], references: [id])
-
-  parentId    Int?
-  parent      User?     @relation("ParentRelation", fields: [parentId], references: [id])
-
-  name        String    @db.VarChar(100)
-  email       String    @unique @db.VarChar(100)
-  password    String    @db.Text
-  role        Role
-
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime? @db.Timestamp(6)
-
-  partners    User[]    @relation("PartnerRelation")
-  parents     User[]    @relation("ParentRelation")
-
-  partnerProfile Partner?
-  parentProfile  Parent?
-}
-
-model Partner {
+model partner {
   id          Int      @id @default(autoincrement())
-  userId      Int      @unique
-  user        User     @relation(fields: [userId], references: [id])
-
+  userId      Int      @unique(map: "Partner_userId_key")
   companyName String?  @db.VarChar(150)
   gstNumber   String?  @db.VarChar(50)
   address     String?  @db.VarChar(255)
-
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime
+  user        user     @relation(fields: [userId], references: [id], map: "Partner_userId_fkey")
 }
 
-model Parent {
-  id          Int      @id @default(autoincrement())
-  userId      Int      @unique
-  user        User     @relation(fields: [userId], references: [id])
+model user {
+  id                              Int       @id @default(autoincrement())
+  name                            String    @db.VarChar(100)
+  email                           String    @unique(map: "User_email_key") @db.VarChar(100)
+  password                        String    @db.Text
+  createdAt                       DateTime  @default(now())
+  deletedAt                       DateTime? @db.Timestamp(6)
+  parentId                        Int?
+  partnerId                       Int?
+  role                            user_role
+  updatedAt                       DateTime
+  parent                          parent?
+  partner                         partner?
+  user_user_parentIdTouser        user?     @relation("user_parentIdTouser", fields: [parentId], references: [id], map: "User_parentId_fkey")
+  other_user_user_parentIdTouser  user[]    @relation("user_parentIdTouser")
+  user_user_partnerIdTouser       user?     @relation("user_partnerIdTouser", fields: [partnerId], references: [id], map: "User_partnerId_fkey")
+  other_user_user_partnerIdTouser user[]    @relation("user_partnerIdTouser")
 
-  name  String?  @db.VarChar(150)
-  contactNo   String?  @db.VarChar(20)
-  address     String?  @db.VarChar(255)
+  @@index([parentId], map: "User_parentId_fkey")
+  @@index([partnerId], map: "User_partnerId_fkey")
+}
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+enum user_role {
+  ADMIN
+  PARTNER
+  PARENT
 }
