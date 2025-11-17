@@ -22,7 +22,7 @@ export const navigationConfig: NavigationItem[] = [
     id: 'children',
     label: 'Children',
     icon: 'Users',
-    path: '/children',
+    path: '/child',
     roles: ['PARTNER', 'PARENT'],
   },
   {

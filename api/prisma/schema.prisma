@@ -13,6 +13,13 @@ enum Role {
   PARENT
 }
 
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+
 model User {
   id          Int       @id @default(autoincrement())
 
@@ -62,4 +69,24 @@ model Parent {
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+
+model PartnerParentInvitation {
+  id                 Int               @id @default(autoincrement())
+  
+  partnerId          Int
+  partner            Partner           @relation(fields: [partnerId], references: [id])
+
+  parentId           Int
+  parent             Parent            @relation(fields: [parentId], references: [id])
+
+  status             InvitationStatus  @default(PENDING)
+
+  parentActionAt     DateTime?         @db.Timestamp(6)  // null until accept/reject
+  expiryAt           DateTime          @db.Timestamp(6)
+
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  deletedAt          DateTime?         @db.Timestamp(6)
 }

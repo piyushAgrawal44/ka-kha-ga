@@ -6,6 +6,7 @@ import { Star, Trophy, Award, Sparkles, Plus } from 'lucide-react';
 import { Table } from '../../components/ui/table/table';
 import Button from '../../components/ui/button/button';
 import Input from '../../components/ui/input/Input';
+import PageHeader from '../../components/ui/page-header/page-header';
 
 interface Child {
   id: string;
@@ -347,12 +348,7 @@ const ChildListPage: React.FC = () => {
     <>
       <div className='flex justify-between items-center'>
         <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-            Children Management
-          </h1>
-          <p className="text-gray-600">
-            Manage and track all children in your therapy program
-          </p>
+          <PageHeader title='Children Management' description='Manage and track all children' />
         </div>
         <div className='flex gap-2'>
           <Button icon={Plus}>New Child</Button>

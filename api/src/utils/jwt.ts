@@ -1,5 +1,6 @@
 import { SignJWT, jwtVerify, JWTPayload } from "jose";
 import { config } from "../config/index.js";
+import { UserAuthTokenPayloadType } from "../types/user.js";
 
 export class JwtUtil {
   private static secret = new TextEncoder().encode(config.jwtSecret);
@@ -22,9 +23,9 @@ export class JwtUtil {
    * @returns Decoded payload
    * @throws Error if invalid or expired
    */
-  static async verifyToken(token: string): Promise<JWTPayload> {
+  static async verifyToken(token: string): Promise<UserAuthTokenPayloadType> {
     const { payload } = await jwtVerify(token, this.secret);
-    return payload;
+    return payload as UserAuthTokenPayloadType;
   }
 
   /**

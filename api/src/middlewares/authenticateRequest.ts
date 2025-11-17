@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { JwtUtil } from "../utils/jwt.js";
 import { sendErrorResponse } from "../utils/response.js";
+import { UserService } from "../services/user.js";
+import { UserAuthTokenPayloadType } from "../types/user.js";
 
 export const AuthMiddleware = {
   verifyToken: async (req: Request, res: Response, next: NextFunction) => {
@@ -18,9 +20,27 @@ export const AuthMiddleware = {
         });
       }
 
-      const decoded = await JwtUtil.verifyToken(token);
+      const decoded: UserAuthTokenPayloadType = await JwtUtil.verifyToken(token);
+      const userId: number = decoded.userId;
 
-      req.user = decoded;
+      const US = new UserService();
+      const user = await US.getUserById(userId);
+
+      if (!user) return sendErrorResponse(res, {
+        code: 401,
+        message: "Invalid authentication token",
+        error: "User not found in our DB"
+      });
+
+      req.user = {
+        id: user.id,
+        userId: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        partnerId: user.partnerId,
+        parentId: user.parentId,
+      };
 
       next();
     } catch (error) {

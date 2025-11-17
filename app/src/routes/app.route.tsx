@@ -16,6 +16,7 @@ import ParentManagement from "../pages/parent-management/parent-management";
 import AuthPage from "../pages/auth/auth";
 import ErrorPage from "../pages/error-page/ErrorPage";
 import { UserRole } from "../types/user.type";
+import ChildListPage from "../pages/child-list-page/chlid-list-page";
 
 export const appRoutes: AppRouteType[] = [
   {
@@ -38,10 +39,16 @@ export const appRoutes: AppRouteType[] = [
         roles: ["PARTNER", "PARENT"],
       },
       {
-        path: "parent",
+        path: "/parent",
         element: <ParentManagement />,
         protected: true,
         roles: ["PARTNER"],
+      },
+      {
+        path: "/child",
+        element: <ChildListPage />,
+        protected: true,
+        roles: ["PARTNER","PARENT"],
       }
     ]
   },

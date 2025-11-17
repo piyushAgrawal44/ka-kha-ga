@@ -6,7 +6,7 @@ import { PasswordUtil } from "../utils/password.js";
 import { UserAuthTokenPayloadType } from "../types/user.js";
 import { JwtUtil } from "../utils/jwt.js";
 import { PartnerService } from "../services/partner.js";
-import { ParentService } from "../services/parent.js";
+import { ParentService } from "../services/parent/parent.js";
 
 export class UserController {
     private userService = new UserService();

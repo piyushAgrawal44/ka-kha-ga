@@ -72,6 +72,7 @@ export class UserService {
    */
   async getUserById(id: number) {
     try {
+      
       const user = await db.user.findUnique({
         where: { id },
         include: {
