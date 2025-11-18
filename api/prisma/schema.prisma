@@ -56,6 +56,8 @@ model Partner {
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  invitations PartnerParentInvitation[]   // 👈 Add this
 }
 
 model Parent {
@@ -63,18 +65,19 @@ model Parent {
   userId      Int      @unique
   user        User     @relation(fields: [userId], references: [id])
 
-  name  String?  @db.VarChar(150)
+  name        String?  @db.VarChar(150)
   contactNo   String?  @db.VarChar(20)
   address     String?  @db.VarChar(255)
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-}
 
+  invitations PartnerParentInvitation[]   // 👈 Add this
+}
 
 model PartnerParentInvitation {
   id                 Int               @id @default(autoincrement())
-  
+
   partnerId          Int
   partner            Partner           @relation(fields: [partnerId], references: [id])
 
@@ -83,10 +86,77 @@ model PartnerParentInvitation {
 
   status             InvitationStatus  @default(PENDING)
 
-  parentActionAt     DateTime?         @db.Timestamp(6)  // null until accept/reject
+  parentActionAt     DateTime?         @db.Timestamp(6)
   expiryAt           DateTime          @db.Timestamp(6)
 
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt
   deletedAt          DateTime?         @db.Timestamp(6)
+}
+
+enum EmailTemplateType {
+  PARENT_INVITE
+  PARTNER_WELCOME
+  PARENT_WELCOME
+  PASSWORD_RESET
+  MILESTONE_NOTIFICATION
+  SESSION_REMINDER
+  DEFAULT
+}
+
+model EmailTemplate {
+  id               Int                @id @default(autoincrement())
+  
+  templateName     String             @unique @db.VarChar(100)
+  templateType     EmailTemplateType  @unique
+  subject          String             @db.VarChar(255)
+  bodyHtml         String             @db.Text
+  bodyText         String?            @db.Text  // Plain text version
+  variables        Json               // Array of variable names like ["__NAME__", "__EMAIL__"]
+  
+  isActive         Boolean            @default(true)
+  
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  
+  @@index([templateType])
+}
+
+model GlobalEmailTemplate {
+  id               Int      @id @default(autoincrement())
+  
+  name             String   @unique @default("default") @db.VarChar(50)
+  headerHtml       String   @db.Text  // Header with logo
+  footerHtml       String   @db.Text  // Footer with social links, etc.
+  
+  isActive         Boolean  @default(true)
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model EmailLog {
+  id               Int      @id @default(autoincrement())
+  
+  recipientEmail   String   @db.VarChar(100)
+  recipientName    String?  @db.VarChar(100)
+  subject          String   @db.VarChar(255)
+  templateType     EmailTemplateType
+  
+  status           EmailStatus
+  errorMessage     String?  @db.Text
+  
+  sentAt           DateTime?
+  createdAt        DateTime @default(now())
+  
+  @@index([recipientEmail])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum EmailStatus {
+  PENDING
+  SENT
+  FAILED
+  BOUNCED
 }

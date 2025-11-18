@@ -19,7 +19,7 @@ export class ParentService {
     }
     async getParentByEmail(email: string){
         try {
-            const parent = await db.user.findFirst({where: {email: email}});
+            const parent = await db.user.findUnique({where: {email: email, role: "PARENT"}});
             if(!parent) return null;
             return parent;
         } catch (error) {
