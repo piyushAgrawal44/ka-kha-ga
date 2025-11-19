@@ -63,7 +63,6 @@ export class EmailTemplateCompiler {
     variables: EmailVariables,
     subjectOverride?: string
   ): CompiledEmail {
-    console.log(variables, emailTemplate.variables);
     // Validate variables
     const validation = this.validateVariables(emailTemplate.variables, variables);
     if (!validation.valid) {

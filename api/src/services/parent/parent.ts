@@ -17,14 +17,34 @@ export class ParentService {
             throw new Error("Failed to create parent");
         }
     }
-    async getParentByEmail(email: string){
+    async getParentByEmail(email: string) {
         try {
-            const parent = await db.user.findUnique({where: {email: email, role: "PARENT"}});
-            if(!parent) return null;
+            const parent = await db.user.findUnique({ where: { email: email, role: "PARENT" } });
+            if (!parent) return null;
             return parent;
         } catch (error) {
             logger.error({ message: "Failed to get parent using email id", object: error })
             throw new Error("Failed to get parent using email id");
         }
     }
+
+    /**
+ * Create Partner → Parent Invitation
+ */
+    async createPartnerParentInvitation(data: Prisma.PartnerParentInvitationCreateInput) {
+        try {
+            const invitation = await db.partnerParentInvitation.create({
+                data
+            });
+
+            return {
+                invitationId: invitation.id,
+                expiryAt: invitation.expiryAt
+            };
+        } catch (error) {
+            logger.error({ message: "Error creating PartnerParentInvitation", object: error });
+            throw new Error("Failed to create PartnerParentInvitation");
+        }
+    }
+
 }

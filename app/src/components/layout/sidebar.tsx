@@ -41,7 +41,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const getIcon = (iconName: string) => {
     const Icon = (Icons as any)[iconName];
-    return Icon ? <Icon className="w-5 h-5" /> : <Icons.Circle className="w-5 h-5" />;
+    return Icon ? <Icon className="w-5 h-5 shrink-0" /> : <Icons.Circle className="w-5 h-5 shrink-0" />;
   };
 
   const renderNavItem = (item: NavigationItem, level: number = 0) => {
@@ -54,11 +54,10 @@ const Sidebar: React.FC<SidebarProps> = ({
         {hasChildren ? (
           <button
             onClick={() => toggleExpanded(item.id)}
-            className={`w-full flex items-center justify-between px-4 py-3 text-sm font-medium transition-all rounded-lg ${
-              active
+            className={`w-full flex items-center justify-between px-4 py-3 text-sm font-medium transition-all rounded-lg ${active
                 ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
                 : 'text-gray-700 hover:bg-purple-50'
-            } ${level > 0 ? 'ml-4' : ''} ${isCollapsed && level === 0 ? 'justify-center' : ''}`}
+              } ${level > 0 ? 'ml-4' : ''} ${isCollapsed && level === 0 ? 'justify-center' : ''}`}
           >
             <div className="flex items-center space-x-3">
               {getIcon(item.icon)}
@@ -66,9 +65,8 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
             {!isCollapsed && hasChildren && (
               <Icons.ChevronDown
-                className={`w-4 h-4 transition-transform ${
-                  isExpanded ? 'rotate-180' : ''
-                }`}
+                className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''
+                  }`}
               />
             )}
             {!isCollapsed && item.badge && (
@@ -81,11 +79,10 @@ const Sidebar: React.FC<SidebarProps> = ({
           <Link
             to={item.path}
             onClick={onMobileClose}
-            className={`flex items-center space-x-3 px-4 py-3 text-sm font-medium transition-all rounded-lg ${
-              active
+            className={`flex items-center space-x-3 px-4 py-3 text-sm font-medium transition-all rounded-lg ${active
                 ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
                 : 'text-gray-700 hover:bg-purple-50'
-            } ${level > 0 ? 'ml-4' : ''} ${isCollapsed && level === 0 ? 'justify-center' : ''}`}
+              } ${level > 0 ? 'ml-4' : ''} ${isCollapsed && level === 0 ? 'justify-center' : ''}`}
           >
             {getIcon(item.icon)}
             {!isCollapsed && (
@@ -122,11 +119,9 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-50 h-screen bg-white border-r border-gray-200 transition-all duration-300 ${
-          isCollapsed ? 'w-20' : 'w-70 sm:w-64'
-        } ${
-          isMobileOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0`}
+        className={`fixed top-0 left-0 z-50 h-screen bg-white border-r border-gray-200 transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-70 sm:w-64'
+          } ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'
+          } lg:translate-x-0`}
       >
         <div className="flex flex-col h-full">
           {/* Logo Section */}
@@ -136,9 +131,12 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <div className="bg-gradient-to-br from-purple-600 to-pink-600 p-2 rounded-xl">
                   <Icons.Sparkles className="w-6 h-6 text-white" />
                 </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  {import.meta.env.VITE_APP_NAME}
-                </span>
+                <div>
+                  <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    {import.meta.env.VITE_APP_NAME}
+                  </span>
+                  <p className='text-xs'>Growth Software</p>
+                </div>
               </div>
             )}
             {isCollapsed && (

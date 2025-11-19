@@ -85,13 +85,13 @@ export default function HomePage() {
                     <div className="flex justify-between items-center h-16">
                         <div className="flex items-center space-x-2">
                             <div className="bg-gradient-to-br from-purple-600 to-pink-600 p-2 rounded-xl">
-                                <Sparkles className="w-6 h-6 text-white" />
+                                <Sparkles className="w-7 h-7 text-white" />
                             </div>
                             <div>
-                                <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                                <span className="text-[26px] leading-0 font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                                     क-ख-ग
                                 </span>
-                                <p className='text-xs'>Kids Growth Tracking Software</p>
+                                <p className='text-xs'>Growth Software</p>
                             </div>
                         </div>
 
