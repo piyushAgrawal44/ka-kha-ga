@@ -31,10 +31,7 @@ export default class HttpClient {
   private setupInterceptors() {
     // REQUEST INTERCEPTOR
     this.axios.interceptors.request.use((config) => {
-      if (config.headers["authRequired"]) {
-        const token = new LocalStorageUtil().getAuthToken(); // or use env/service injection
-        if (token) config.headers["Authorization"] = `Bearer ${token}`;
-      }
+      
       return config;
     });
 
@@ -86,8 +83,13 @@ export default class HttpClient {
       const axiosConfig: AxiosRequestConfig = {
         method,
         url,
-        headers: { authRequired: options.useAuth || false },
+        headers: {},
       };
+
+      if(options.useAuth){
+         const token = new LocalStorageUtil().getAuthToken(); // or use env/service injection
+        if (token && axiosConfig.headers) axiosConfig.headers.Authorization = `Bearer ${token}`;
+      }
 
       if (options.responseType) axiosConfig.responseType = options.responseType as any;
 

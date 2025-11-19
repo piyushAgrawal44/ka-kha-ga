@@ -1,13 +1,22 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { customBaseQuery } from "./custom-rtk-wrapper-client.service";
 import { ApiResponse, InviteData } from "../types/parent-invite.type";
-import { PARENT_INVITE_ACCEPT_API, PARENT_INVITE_REJECT_API, PARENT_INVITE_VALIDATE_API } from "../constants/api-url.contant";
+import { PARENT_INVITE_ACCEPT_API, PARENT_INVITE_REJECT_API, PARENT_INVITE_SEND_API, PARENT_INVITE_VALIDATE_API } from "../constants/api-url.contant";
 
 export const parentInviteApi = createApi({
     reducerPath: "parentInviteApi",
     baseQuery: customBaseQuery,
 
     endpoints: (builder) => ({
+
+        sendParentInvite: builder.mutation<ApiResponse, { email: string }>({
+            query: (body) => ({
+                url: PARENT_INVITE_SEND_API,
+                method: "post",
+                useAuth: true,
+                data: body,
+            }),
+        }),
 
         validateParentInvite: builder.query<ApiResponse<InviteData>, string>({
             query: (inviteId) => ({
@@ -49,4 +58,5 @@ export const {
     useValidateParentInviteQuery,
     useAcceptParentInviteMutation,
     useRejectParentInviteMutation,
+    useSendParentInviteMutation,
 } = parentInviteApi;

@@ -20,9 +20,12 @@ export class ParentController {
             const parentInputEmail = req.body.email;
             const partner = req.user;
 
-            const parent = await this.ParentService.getParentByEmail(parentInputEmail);
-            if (!parent) return sendErrorResponse(res, { code: 404, message: "Parent not found for given email address", error: "Parent Not Found" });
+            const parentUser = await this.ParentService.getParentByEmail(parentInputEmail);
+            if (!parentUser) return sendErrorResponse(res, { code: 404, message: "Parent not found for given email address", error: "Parent Not Found" });
+            if (!parentUser.parentId) return sendErrorResponse(res, { code: 404, message: "Parent not found for given email address", error: "Parent Not Found" });
 
+
+            logger.debug({message: `Parent found: ID ${parentUser.id}`, object: parentUser})
 
 
             // 3. Insert invitation
@@ -30,7 +33,7 @@ export class ParentController {
 
             const invitation = await this.ParentService.createPartnerParentInvitation({
                 partner: { connect: { id: partner.id } },
-                parent: { connect: { id: parent.id } },
+                parent: { connect: { id: parentUser.parentId } },
                 expiryAt
             });
 
@@ -39,11 +42,11 @@ export class ParentController {
 
             // 4. Send email
             await this.EmailService.sendEmail({
-                recipientName: parent.name,
-                to: parent.email,
+                recipientName: parentUser.name,
+                to: parentUser.email,
                 templateType: "PARENT_INVITE",
                 variables: {
-                    NAME: parent.name,
+                    NAME: parentUser.name,
                     PARTNER_NAME: partner.name,
                     INVITE_LINK: `${config.frontendAppDomain}/parent-invite/${encryptedId}`
                 }
