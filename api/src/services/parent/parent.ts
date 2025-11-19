@@ -1,6 +1,7 @@
 import { db } from "../../config/database.js";
 import type { Prisma } from "@prisma/client";
 import { logger } from "../../utils/logger.js";
+import moment from "moment";
 
 export class ParentService {
     /**
@@ -29,8 +30,8 @@ export class ParentService {
     }
 
     /**
- * Create Partner → Parent Invitation
- */
+     * Create Partner → Parent Invitation
+     */
     async createPartnerParentInvitation(data: Prisma.PartnerParentInvitationCreateInput) {
         try {
             const invitation = await db.partnerParentInvitation.create({
@@ -45,6 +46,46 @@ export class ParentService {
             logger.error({ message: "Error creating PartnerParentInvitation", object: error });
             throw new Error("Failed to create PartnerParentInvitation");
         }
+    }
+
+
+    /**
+     * Find invitation by decrypted invitationId
+     */
+    async findInvitationById(invitationId: number) {
+        return db.partnerParentInvitation.findUnique({
+            where: { id: invitationId },
+            include: {
+                partner: true,
+                parent: true
+            }
+        });
+    }
+
+    /**
+     * Mark invitation as accepted
+     */
+    async acceptInvitation(invitationId: number) {
+        return db.partnerParentInvitation.update({
+            where: { id: invitationId },
+            data: {
+                status: "ACCEPTED",
+                parentActionAt: moment().toDate()
+            }
+        });
+    }
+
+    /**
+     * Mark invitation as rejected
+     */
+    async rejectInvitation(invitationId: number) {
+        return db.partnerParentInvitation.update({
+            where: { id: invitationId },
+            data: {
+                status: "REJECTED",
+                parentActionAt: moment().toDate()
+            }
+        });
     }
 
 }

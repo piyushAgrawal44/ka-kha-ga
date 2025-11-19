@@ -17,6 +17,7 @@ import AuthPage from "../pages/auth/auth";
 import ErrorPage from "../pages/error-page/ErrorPage";
 import { UserRole } from "../types/user.type";
 import ChildListPage from "../pages/child-list-page/chlid-list-page";
+import ParentInvitePage from "../pages/parent-invite";
 
 export const appRoutes: AppRouteType[] = [
   {
@@ -54,6 +55,7 @@ export const appRoutes: AppRouteType[] = [
   },
 
   { path: "/login", element: <AuthPage /> },
+  { path: "/parent-invite/:id", element: <ParentInvitePage /> },
 
   { path: "/unauthorized", element: <ErrorPage /> },
 
