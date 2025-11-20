@@ -15,7 +15,7 @@ export const customBaseQuery: BaseQueryFn<
   unknown
 > = async ({ url, method = "get", data, params, useAuth = true }) => {
   try {
-    console.log({ url, method, data, params, useAuth })
+    
     const response = await ApiClient.request(method, { url, urlParams: params}, { useAuth }, data);
 
     return { data: response.data };

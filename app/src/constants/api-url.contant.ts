@@ -12,3 +12,4 @@ export const PARENT_INVITE_SEND_API="/parent/send-invite";
 export const PARENT_INVITE_VALIDATE_API="/parent/invite/:inviteId/validate";
 export const PARENT_INVITE_ACCEPT_API="/parent/invite/:inviteId/accept";
 export const PARENT_INVITE_REJECT_API="/parent/invite/:inviteId/reject";
+export const PARTNER_INVITE_LIST_API="/parent/invite"

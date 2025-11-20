@@ -1,14 +1,25 @@
+
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { customBaseQuery } from "./custom-rtk-wrapper-client.service";
-import { ApiResponse, InviteData } from "../types/parent-invite.type";
-import { PARENT_INVITE_ACCEPT_API, PARENT_INVITE_REJECT_API, PARENT_INVITE_SEND_API, PARENT_INVITE_VALIDATE_API } from "../constants/api-url.contant";
+import {
+    ApiResponse,
+    InviteData,
+    InvitationListResponse,
+    GetInvitationsParams
+} from "../types/parent-invite.type";
+import {
+    PARENT_INVITE_ACCEPT_API,
+    PARENT_INVITE_REJECT_API,
+    PARENT_INVITE_SEND_API,
+    PARENT_INVITE_VALIDATE_API,
+    PARTNER_INVITE_LIST_API
+} from "../constants/api-url.contant";
 
 export const parentInviteApi = createApi({
     reducerPath: "parentInviteApi",
     baseQuery: customBaseQuery,
-
+    tagTypes: ['InvitationList'],
     endpoints: (builder) => ({
-
         sendParentInvite: builder.mutation<ApiResponse, { email: string }>({
             query: (body) => ({
                 url: PARENT_INVITE_SEND_API,
@@ -16,8 +27,9 @@ export const parentInviteApi = createApi({
                 useAuth: true,
                 data: body,
             }),
+            invalidatesTags: ['InvitationList'],
         }),
-
+        
         validateParentInvite: builder.query<ApiResponse<InviteData>, string>({
             query: (inviteId) => ({
                 method: "get",
@@ -28,7 +40,7 @@ export const parentInviteApi = createApi({
                 },
             }),
         }),
-
+        
         acceptParentInvite: builder.mutation<ApiResponse, string>({
             query: (inviteId) => ({
                 url: PARENT_INVITE_ACCEPT_API,
@@ -39,7 +51,7 @@ export const parentInviteApi = createApi({
                 },
             }),
         }),
-
+        
         rejectParentInvite: builder.mutation<ApiResponse, string>({
             query: (inviteId) => ({
                 url: PARENT_INVITE_REJECT_API,
@@ -50,7 +62,19 @@ export const parentInviteApi = createApi({
                 },
             }),
         }),
-
+        
+        // NEW: Get partner's invitation list
+        getPartnerInvitations: builder.query<ApiResponse<InvitationListResponse>, GetInvitationsParams>({
+            query: (params) => ({
+                url: PARTNER_INVITE_LIST_API,
+                method: "get",
+                useAuth: true,
+                params: {
+                    queryParams: params
+                },
+            }),
+            providesTags: ['InvitationList'],
+        }),
     }),
 });
 
@@ -59,4 +83,5 @@ export const {
     useAcceptParentInviteMutation,
     useRejectParentInviteMutation,
     useSendParentInviteMutation,
+    useGetPartnerInvitationsQuery,  // NEW HOOK
 } = parentInviteApi;

@@ -1,11 +1,11 @@
 import { Plus } from "lucide-react";
 import Button from "../../components/ui/button/button";
-import Input from "../../components/ui/input/Input";
 import PageHeader from "../../components/ui/page-header/page-header";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { useSendParentInviteMutation } from "../../services/parent-invite.service";
 import InviteParentModal from "./components/parent-invite-modal";
+import PartnerInvitationsPage from "./components/partner-invite-list";
 
 function ParentManagement() {
   const [showInvite, setShowInvite] = useState(false);
@@ -43,9 +43,12 @@ function ParentManagement() {
           <Button icon={Plus} onClick={() => setShowInvite(true)}>
             Invite Parent
           </Button>
-
-          <Input type="search" placeholder="Search..." />
         </div>
+      </div>
+
+      <div>
+        <PartnerInvitationsPage />
+      
       </div>
 
       {/* Invite Modal */}

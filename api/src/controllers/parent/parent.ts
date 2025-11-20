@@ -225,4 +225,126 @@ export class ParentController {
             });
         }
     }
+
+    /**
+ * Get All Invitations with Filters, Pagination, Sorting, and Statistics
+ */
+async getInvitationsList(req: Request, res: Response) {
+    try {
+        const partner = req.user;
+        
+        // Extract query parameters
+        const {
+            page = '1',
+            limit = '10',
+            sortBy = 'createdAt',
+            sortOrder = 'desc',
+            status,
+            parentName,
+            startDate,
+            endDate
+        } = req.query;
+
+        // Parse pagination
+        const pageNum = Math.max(1, parseInt(page as string));
+        const limitNum = Math.min(100, Math.max(1, parseInt(limit as string)));
+        const skip = (pageNum - 1) * limitNum;
+
+        // Build filters
+        const filters: any = {
+            partnerId: partner.partnerId,
+            deletedAt: null
+        };
+
+        // Status filter
+        if (status && ['PENDING', 'ACCEPTED', 'REJECTED'].includes(status as string)) {
+            filters.status = status;
+        }
+
+        // Parent name filter
+        if (parentName && typeof parentName === 'string' && parentName.trim()) {
+            filters.parent = {
+                user: {
+                    name: {
+                        contains: parentName.trim(),
+                        
+                    }
+                }
+            };
+        }
+
+        // Date range filter
+        if (startDate || endDate) {
+            filters.createdAt = {};
+            
+            if (startDate) {
+                const start = new Date(startDate as string);
+                if (!isNaN(start.getTime())) {
+                    filters.createdAt.gte = start;
+                }
+            }
+            
+            if (endDate) {
+                const end = new Date(endDate as string);
+                if (!isNaN(end.getTime())) {
+                    // Set to end of day
+                    end.setHours(23, 59, 59, 999);
+                    filters.createdAt.lte = end;
+                }
+            }
+        }
+
+        // Validate sort field
+        const allowedSortFields = ['createdAt', 'expiryAt', 'status', 'parentActionAt'];
+        const sortField = allowedSortFields.includes(sortBy as string) ? sortBy : 'createdAt';
+        const order = sortOrder === 'asc' ? 'asc' : 'desc';
+
+        // Get statistics and invitations in parallel
+        const [invitations, totalCount, statistics] = await Promise.all([
+            this.ParentService.getInvitationsList({
+                filters,
+                skip,
+                take: limitNum,
+                sortBy: sortField as string,
+                sortOrder: order
+            }),
+            this.ParentService.getInvitationsCount(filters),
+            this.ParentService.getInvitationsStatistics(partner.partnerId)
+        ]);
+
+        // Calculate pagination metadata
+        const totalPages = Math.ceil(totalCount / limitNum);
+        const hasNextPage = pageNum < totalPages;
+        const hasPrevPage = pageNum > 1;
+
+        return sendSuccessResponse(res, {
+            code: 200,
+            message: "Invitations retrieved successfully",
+            data: {
+                invitations,
+                statistics,
+                pagination: {
+                    currentPage: pageNum,
+                    totalPages,
+                    totalCount,
+                    limit: limitNum,
+                    hasNextPage,
+                    hasPrevPage
+                }
+            }
+        });
+    } catch (error) {
+        logger.error({
+            message: "Error fetching invitations list",
+            object: error
+        });
+
+        return sendErrorResponse(res, {
+            code: 500,
+            message: "Unable to fetch invitations",
+            error: "Internal Server Error"
+        });
+    }
+}
+
 }

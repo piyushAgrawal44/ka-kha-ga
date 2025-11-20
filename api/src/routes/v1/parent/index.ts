@@ -8,6 +8,10 @@ import { ParentController } from "../../../controllers/parent/parent.js";
 
 const router = Router();
 
+router.get("/invite", AuthMiddleware.verifyToken, RoleCheck.allow("PARTNER"), async (req, res) => {
+    const PC = new ParentController();
+    return await PC.getInvitationsList(req, res);
+});
 
 router.post("/send-invite", AuthMiddleware.verifyToken, RoleCheck.allow("PARTNER"), Validate.schema(ParentInviteValidation.sendInviteSchema), async (req, res) => {
     const PC = new ParentController();
