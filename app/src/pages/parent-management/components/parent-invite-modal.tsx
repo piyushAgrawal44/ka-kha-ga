@@ -36,6 +36,11 @@ const InviteParentModal: React.FC<Props> = ({ open, onClose, onSubmit, loading }
                     placeholder="Enter parent email..."
                     value={email}
                     onChange={(e: any) => setEmail(e.target.value)}
+                    onKeyDown={(event: any)=>{
+                        if(event.key=="Enter"){
+                            onSubmit(email);
+                        }
+                    }}
                 />
 
                 {/* Footer */}

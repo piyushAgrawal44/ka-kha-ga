@@ -34,12 +34,12 @@ function ParentManagement() {
 
   return (
     <>
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center flex-wrap gap-2">
         <div className="mb-6">
           <PageHeader title="Parent Management" description="Manage and track all parents" />
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button icon={Plus} onClick={() => setShowInvite(true)}>
             Invite Parent
           </Button>
