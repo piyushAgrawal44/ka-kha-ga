@@ -34,8 +34,8 @@ function ParentManagement() {
 
   return (
     <>
-      <div className="flex justify-between items-center flex-wrap gap-2">
-        <div className="mb-6">
+      <div className="flex justify-between items-center flex-wrap gap-2 mb-6">
+        <div className="">
           <PageHeader title="Parent Management" description="Manage and track all parents" />
         </div>
 
