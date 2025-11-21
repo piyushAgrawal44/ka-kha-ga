@@ -1,8 +1,8 @@
 // src/services/email/EmailSender.ts
 
 import nodemailer, { Transporter } from 'nodemailer';
-import { emailConfig } from '../../config/email';
-import { CompiledEmail } from '../../types/email';
+import { emailConfig } from '../../config/email.js';
+import { CompiledEmail } from '../../types/email.js';
 
 export class EmailSender {
   private transporter: Transporter;

@@ -1,7 +1,7 @@
 // src/services/email/EmailRepository.ts
 
 import { PrismaClient, EmailTemplateType, EmailStatus } from '@prisma/client';
-import { EmailTemplateData, GlobalTemplateData, EmailLogData } from '../../types/email';
+import { EmailTemplateData, GlobalTemplateData, EmailLogData } from '../../types/email.js';
 import moment from 'moment';
 
 export class EmailRepository {

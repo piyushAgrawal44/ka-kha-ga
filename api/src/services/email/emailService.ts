@@ -1,10 +1,10 @@
 // src/services/email/EmailService.ts
 
 import { PrismaClient, EmailStatus } from '@prisma/client';
-import { EmailRepository } from './emailRepository';
-import { EmailTemplateCompiler } from './emailTemplateCompiler';
-import { EmailSender } from './emailSender';
-import { SendEmailOptions } from '../../types/email';
+import { EmailRepository } from './emailRepository.js';
+import EmailTemplateCompiler from './emailTemplateCompiler.js';
+import { SendEmailOptions } from '../../types/email.js';
+import EmailSender from './emailSender.js';
 
 export class EmailService {
   private repository: EmailRepository;

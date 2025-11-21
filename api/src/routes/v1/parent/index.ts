@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { UserController } from "../../../controllers/user.js";
 import { AuthMiddleware } from "../../../middlewares/authenticateRequest.js";
 import { Validate } from "../../../middlewares/validateRequest.js";
 import ParentInviteValidation from "../../../validators/parent/sendInvite.js";
