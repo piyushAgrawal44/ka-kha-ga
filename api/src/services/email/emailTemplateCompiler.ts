@@ -1,6 +1,6 @@
 // src/services/email/EmailTemplateCompiler.ts
 
-import { emailConfig } from '../../config/email';
+import { emailConfig } from '../../config/email.js';
 import { EmailVariables, CompiledEmail, EmailTemplateData, GlobalTemplateData } from '../../types/email.js';
 
 export class EmailTemplateCompiler {
