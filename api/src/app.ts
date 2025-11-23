@@ -10,8 +10,10 @@ import { RateLimiterMiddleware } from "./middlewares/rateLimiter.js";
 import { config } from "./config/index.js";
 
 const app: Application = express();
-
-app.set("trust proxy", config.enableTrustProxy);
+if(config.enableTrustProxy){
+  // enable trust proxy only in case of reverse proxy is enabled
+  app.set("trust proxy", true);
+}
 
 // Security & Middleware
 app.use(helmet());
