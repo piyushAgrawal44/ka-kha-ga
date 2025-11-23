@@ -86,7 +86,8 @@ export class UserController {
 
             return sendSuccessResponse(res, { code: 200, message: "Token generation successful !", data: { token: authToken, user: existing } })
         } catch (error: any) {
-
+            logger.error({message: "Internal Server Error", object: error});
+            return sendErrorResponse(res, {message:"Failed to login ! Please try again after sometime.", error:"Internal Server Error"})
         }
     }
 
