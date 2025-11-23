@@ -2,6 +2,7 @@ import 'dotenv/config';
 
 export const config = {
     appName: process.env.APP_NAME || "क-ख-ग",
+    enableTrustProxy: process.env.APP_TRUST_PROXY || false,
     env: process.env.NODE_ENV || 'development',
     port: process.env.PORT || 4500,
     frontendAppDomain: process.env.FRONTEND_APP_DOMAIN || "https://ka-kha-ga.vercel.app",

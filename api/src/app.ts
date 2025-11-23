@@ -11,6 +11,8 @@ import { config } from "./config/index.js";
 
 const app: Application = express();
 
+app.set("trust proxy", config.enableTrustProxy);
+
 // Security & Middleware
 app.use(helmet());
 app.use(cors({
