@@ -9,7 +9,7 @@
     "build": "tsc",
     "start": "node dist/src/app.js",
     "dev": "nodemon --watch src --ext ts --exec tsx src/index.ts",
-    "vercel-build": "rm -rf node_modules/.prisma && rm -rf prisma/generated && npx prisma generate && npm run build"
+    "vercel-build": "rm -rf node_modules/.prisma && rm -rf prisma/generated && npx prisma generate && npx prisma db push && npm run build"
 
   },
   "author": "Developer Bowl Team",
