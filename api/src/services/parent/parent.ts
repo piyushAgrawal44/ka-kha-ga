@@ -43,7 +43,9 @@ export class ParentService {
                 expiryAt: invitation.expiryAt
             };
         } catch (error) {
-            logger.error({ message: "Error creating PartnerParentInvitation", object: error });
+            logger.error({ message: "Error creating PartnerParentInvitation", object: {
+                data, error
+            } });
             throw new Error("Failed to create PartnerParentInvitation");
         }
     }

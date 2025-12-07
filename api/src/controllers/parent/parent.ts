@@ -32,7 +32,7 @@ export class ParentController {
             const expiryAt = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000); // 2 days
 
             const invitation = await this.ParentService.createPartnerParentInvitation({
-                partner: { connect: { id: partner.id } },
+                partner: { connect: { id: partner.partnerId } },
                 parent: { connect: { id: parentUser.parentId } },
                 expiryAt
             });

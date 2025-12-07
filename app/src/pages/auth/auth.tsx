@@ -187,7 +187,7 @@ export const AuthPage: React.FC = () => {
           </div>
 
           {/* Bottom Decoration */}
-          <div className="mt-8 flex items-center justify-center space-x-2">
+          <div className="mt-3 flex items-center justify-center space-x-2">
             <Star className="w-4 h-4 text-yellow-400" fill="currentColor" />
             <span className="text-xs text-gray-500 font-semibold">
               Powered by {import.meta.env.VITE_APP_NAME}
