@@ -128,15 +128,17 @@ const Sidebar: React.FC<SidebarProps> = ({
           <div className="flex items-center justify-between p-4 border-b border-gray-200">
             {!isCollapsed && (
               <div className="flex items-center space-x-2">
-                <div className="bg-gradient-to-br from-purple-600 to-pink-600 p-2 rounded-xl">
+                {/* <div className="bg-gradient-to-br from-purple-600 to-pink-600 p-2 rounded-xl">
                   <Icons.Sparkles className="w-6 h-6 text-white" />
-                </div>
+                </div> */}
+                <img src='/logo.png' className='w-20' />
                 <div>
                   <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                     {import.meta.env.VITE_APP_NAME}
                   </span>
                   <p className='text-xs'>Growth Software</p>
                 </div>
+                
               </div>
             )}
             {isCollapsed && (
