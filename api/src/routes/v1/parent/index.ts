@@ -22,6 +22,11 @@ router.get("/invite/:encryptedId/validate", Validate.schema(ParentInviteValidati
     return await PC.validateInvite(req, res);
 });
 
+router.delete("/invite/:encryptedId", Validate.schema(ParentInviteValidation.delelteInviteSchema), async (req, res) => {
+    const PC = new ParentController();
+    return await PC.deleteInvite(req, res);
+});
+
 router.post("/invite/:encryptedId/accept", Validate.schema(ParentInviteValidation.acceptInviteSchema), async (req, res) => {
     const PC = new ParentController();
     return await PC.acceptInvite(req, res);

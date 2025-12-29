@@ -1,0 +1,8 @@
+[
+  {
+    "name": "default",
+    "headerHtml": "<div style=\"padding:20px;background:#f5f5f5;\"><img src=\"https://www.developerbowl.com/_next/image?url=%2Fdeveloper_bowl_logo.png&w=384&q=75\" height=\"50\"/></div>",
+    "footerHtml": "<div style=\"padding:20px;background:#f5f5f5;text-align:center;\">© 2025 क-ख-ग. All rights reserved.</div>",
+    "isActive": true
+  }
+]

@@ -24,6 +24,16 @@ class ParentInviteValidation {
     /**
      * Validation for: acceptInvite()
      */
+    static delelteInviteSchema = z.object({
+        params: z.object({
+            encryptedId: z.string().min(1, "Invalid or missing invitation id")
+        })
+    });
+
+
+    /**
+     * Validation for: acceptInvite()
+     */
     static acceptInviteSchema = z.object({
         params: z.object({
             encryptedId: z.string().min(1, "Invalid or missing invitation id")

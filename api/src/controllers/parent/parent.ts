@@ -11,6 +11,7 @@ export class ParentController {
     protected ParentService = new ParentService();
     protected EmailService = new EmailService(db);
 
+
     /**
      * Function to send invite to parent
      */
@@ -21,11 +22,17 @@ export class ParentController {
             const partner = req.user;
 
             const parentUser = await this.ParentService.getParentByEmail(parentInputEmail);
-            if (!parentUser) return sendErrorResponse(res, { code: 404, message: "Parent not found for given email address", error: "Parent Not Found" });
-            if (!parentUser.parentId) return sendErrorResponse(res, { code: 404, message: "Parent not found for given email address", error: "Parent Not Found" });
+            if (!parentUser || !parentUser.parentId) return sendErrorResponse(res, { code: 404, message: "Parent not found for given email address", error: "Parent Not Found" });
 
+            // check if invite exist and not expired
+            const existingInvite = await this.ParentService.checkExistingInvite({parentId: parentUser.parentId, partnerId: partner.partnerId});
 
-            logger.debug({message: `Parent found: ID ${parentUser.id}`, object: parentUser})
+            if(existingInvite)  return sendErrorResponse(res, {
+                code: 409,
+                message: "An active invitation already exists for this parent",
+                error: "Invite Already Exists"
+            });
+
 
 
             // 3. Insert invitation
@@ -73,11 +80,11 @@ export class ParentController {
         try {
             const encryptedId = req.params.encryptedId || "";
 
-            logger.debug({message:`Encryption ID: ${encryptedId}`, object: req.params})
+            logger.debug({ message: `Encryption ID: ${encryptedId}`, object: req.params })
             const decodedId = EncryptionUtilInstance.decrypt(encryptedId);
             const invitationId = Number(decodedId);
 
-            const invitation = await this.ParentService.findInvitationById(invitationId);
+            const invitation = await this.ParentService.findInvitationById({invitationId});
             if (!invitation)
                 return sendErrorResponse(res, {
                     code: 404,
@@ -133,13 +140,54 @@ export class ParentController {
     /**
      * Accept Invite
      */
+    async deleteInvite(req: Request, res: Response) {
+        try {
+            const encryptedId = req.params.encryptedId || "";
+            const decodedId = EncryptionUtilInstance.decrypt(encryptedId);
+            const invitationId = Number(decodedId);
+            const partnerUser = req.user;
+
+            const invitation = await this.ParentService.findInvitationById({invitationId, partnerId: partnerUser.partnerId});
+            if (!invitation)
+                return sendErrorResponse(res, {
+                    code: 404,
+                    message: "Invitation not found",
+                    error: "Invalid Invite"
+                });
+
+          
+
+            // Update invitation + link parent to partner
+            await this.ParentService.deleteInvite({invitationId, partnerId: partnerUser.partnerId});
+
+            return sendSuccessResponse(res, {
+                code: 200,
+                message: "Invitation deleted successfully"
+            });
+        } catch (error) {
+            logger.error({
+                message: "Error deleting invitation",
+                object: error
+            });
+
+            return sendErrorResponse(res, {
+                code: 500,
+                message: "Unable to delete invitation",
+                error: "Internal Server Error"
+            });
+        }
+    }
+
+    /**
+     * Accept Invite
+     */
     async acceptInvite(req: Request, res: Response) {
         try {
-            const encryptedId= req.params.encryptedId || "";
+            const encryptedId = req.params.encryptedId || "";
             const decodedId = EncryptionUtilInstance.decrypt(encryptedId);
             const invitationId = Number(decodedId);
 
-            const invitation = await this.ParentService.findInvitationById(invitationId);
+            const invitation = await this.ParentService.findInvitationById({invitationId});
             if (!invitation)
                 return sendErrorResponse(res, {
                     code: 404,
@@ -191,7 +239,7 @@ export class ParentController {
             const decodedId = EncryptionUtilInstance.decrypt(encryptedId);
             const invitationId = Number(decodedId);
 
-            const invitation = await this.ParentService.findInvitationById(invitationId);
+            const invitation = await this.ParentService.findInvitationById({invitationId});
             if (!invitation)
                 return sendErrorResponse(res, {
                     code: 404,
@@ -227,124 +275,124 @@ export class ParentController {
     }
 
     /**
- * Get All Invitations with Filters, Pagination, Sorting, and Statistics
- */
-async getInvitationsList(req: Request, res: Response) {
-    try {
-        const partner = req.user;
-        
-        // Extract query parameters
-        const {
-            page = '1',
-            limit = '10',
-            sortBy = 'createdAt',
-            sortOrder = 'desc',
-            status,
-            parentName,
-            startDate,
-            endDate
-        } = req.query;
+     * Get All Invitations with Filters, Pagination, Sorting, and Statistics
+     */
+    async getInvitationsList(req: Request, res: Response) {
+        try {
+            const partner = req.user;
 
-        // Parse pagination
-        const pageNum = Math.max(1, parseInt(page as string));
-        const limitNum = Math.min(100, Math.max(1, parseInt(limit as string)));
-        const skip = (pageNum - 1) * limitNum;
+            // Extract query parameters
+            const {
+                page = '1',
+                limit = '10',
+                sortBy = 'createdAt',
+                sortOrder = 'desc',
+                status,
+                parentName,
+                startDate,
+                endDate
+            } = req.query;
 
-        // Build filters
-        const filters: any = {
-            partnerId: partner.partnerId,
-            deletedAt: null
-        };
+            // Parse pagination
+            const pageNum = Math.max(1, parseInt(page as string));
+            const limitNum = Math.min(100, Math.max(1, parseInt(limit as string)));
+            const skip = (pageNum - 1) * limitNum;
 
-        // Status filter
-        if (status && ['PENDING', 'ACCEPTED', 'REJECTED'].includes(status as string)) {
-            filters.status = status;
-        }
+            // Build filters
+            const filters: any = {
+                partnerId: partner.partnerId,
+                deletedAt: null
+            };
 
-        // Parent name filter
-        if (parentName && typeof parentName === 'string' && parentName.trim()) {
-            filters.parent = {
-                user: {
-                    name: {
-                        contains: parentName.trim(),
-                        
+            // Status filter
+            if (status && ['PENDING', 'ACCEPTED', 'REJECTED'].includes(status as string)) {
+                filters.status = status;
+            }
+
+            // Parent name filter
+            if (parentName && typeof parentName === 'string' && parentName.trim()) {
+                filters.parent = {
+                    user: {
+                        name: {
+                            contains: parentName.trim(),
+
+                        }
+                    }
+                };
+            }
+
+            // Date range filter
+            if (startDate || endDate) {
+                filters.createdAt = {};
+
+                if (startDate) {
+                    const start = new Date(startDate as string);
+                    if (!isNaN(start.getTime())) {
+                        filters.createdAt.gte = start;
                     }
                 }
-            };
+
+                if (endDate) {
+                    const end = new Date(endDate as string);
+                    if (!isNaN(end.getTime())) {
+                        // Set to end of day
+                        end.setHours(23, 59, 59, 999);
+                        filters.createdAt.lte = end;
+                    }
+                }
+            }
+
+            // Validate sort field
+            const allowedSortFields = ['createdAt', 'expiryAt', 'status', 'parentActionAt'];
+            const sortField = allowedSortFields.includes(sortBy as string) ? sortBy : 'createdAt';
+            const order = sortOrder === 'asc' ? 'asc' : 'desc';
+
+            // Get statistics and invitations in parallel
+            const [invitations, totalCount, statistics] = await Promise.all([
+                this.ParentService.getInvitationsList({
+                    filters,
+                    skip,
+                    take: limitNum,
+                    sortBy: sortField as string,
+                    sortOrder: order
+                }),
+                this.ParentService.getInvitationsCount(filters),
+                this.ParentService.getInvitationsStatistics(partner.partnerId)
+            ]);
+
+            // Calculate pagination metadata
+            const totalPages = Math.ceil(totalCount / limitNum);
+            const hasNextPage = pageNum < totalPages;
+            const hasPrevPage = pageNum > 1;
+
+            return sendSuccessResponse(res, {
+                code: 200,
+                message: "Invitations retrieved successfully",
+                data: {
+                    invitations,
+                    statistics,
+                    pagination: {
+                        currentPage: pageNum,
+                        totalPages,
+                        totalCount,
+                        limit: limitNum,
+                        hasNextPage,
+                        hasPrevPage
+                    }
+                }
+            });
+        } catch (error) {
+            logger.error({
+                message: "Error fetching invitations list",
+                object: error
+            });
+
+            return sendErrorResponse(res, {
+                code: 500,
+                message: "Unable to fetch invitations",
+                error: "Internal Server Error"
+            });
         }
-
-        // Date range filter
-        if (startDate || endDate) {
-            filters.createdAt = {};
-            
-            if (startDate) {
-                const start = new Date(startDate as string);
-                if (!isNaN(start.getTime())) {
-                    filters.createdAt.gte = start;
-                }
-            }
-            
-            if (endDate) {
-                const end = new Date(endDate as string);
-                if (!isNaN(end.getTime())) {
-                    // Set to end of day
-                    end.setHours(23, 59, 59, 999);
-                    filters.createdAt.lte = end;
-                }
-            }
-        }
-
-        // Validate sort field
-        const allowedSortFields = ['createdAt', 'expiryAt', 'status', 'parentActionAt'];
-        const sortField = allowedSortFields.includes(sortBy as string) ? sortBy : 'createdAt';
-        const order = sortOrder === 'asc' ? 'asc' : 'desc';
-
-        // Get statistics and invitations in parallel
-        const [invitations, totalCount, statistics] = await Promise.all([
-            this.ParentService.getInvitationsList({
-                filters,
-                skip,
-                take: limitNum,
-                sortBy: sortField as string,
-                sortOrder: order
-            }),
-            this.ParentService.getInvitationsCount(filters),
-            this.ParentService.getInvitationsStatistics(partner.partnerId)
-        ]);
-
-        // Calculate pagination metadata
-        const totalPages = Math.ceil(totalCount / limitNum);
-        const hasNextPage = pageNum < totalPages;
-        const hasPrevPage = pageNum > 1;
-
-        return sendSuccessResponse(res, {
-            code: 200,
-            message: "Invitations retrieved successfully",
-            data: {
-                invitations,
-                statistics,
-                pagination: {
-                    currentPage: pageNum,
-                    totalPages,
-                    totalCount,
-                    limit: limitNum,
-                    hasNextPage,
-                    hasPrevPage
-                }
-            }
-        });
-    } catch (error) {
-        logger.error({
-            message: "Error fetching invitations list",
-            object: error
-        });
-
-        return sendErrorResponse(res, {
-            code: 500,
-            message: "Unable to fetch invitations",
-            error: "Internal Server Error"
-        });
     }
-}
 
 }

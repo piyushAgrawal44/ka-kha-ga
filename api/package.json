@@ -8,9 +8,12 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "start": "node dist/src/app.js",
+    "seed": "prisma db seed",
     "dev": "nodemon --watch src --ext ts --exec tsx src/index.ts",
     "vercel-build": "rm -rf node_modules/.prisma && rm -rf prisma/generated && npx prisma generate && npx prisma db push && npm run build"
-
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed/index.ts"
   },
   "author": "Developer Bowl Team",
   "license": "ISC",
@@ -19,12 +22,11 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
     "@types/morgan": "^1.9.10",
-    "@types/node": "^24.10.0",
+    "@types/node": "^24.10.4",
     "@types/nodemailer": "^7.0.4",
     "nodemon": "^3.1.10",
     "prisma": "^6.19.0",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.20.6",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {

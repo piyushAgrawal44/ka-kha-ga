@@ -1,9 +1,11 @@
 import { db } from "../../config/database.js";
-import type { Prisma } from "@prisma/client";
+import { InvitationStatus, type Prisma } from "@prisma/client";
 import { logger } from "../../utils/logger.js";
 import moment from "moment";
 
 export class ParentService {
+
+
     /**
      * Partner Create Function
      */
@@ -18,6 +20,12 @@ export class ParentService {
             throw new Error("Failed to create parent");
         }
     }
+
+    /**
+     * Function to get parent info by email address
+     * @param email Email Address
+     * @returns 
+     */
     async getParentByEmail(email: string) {
         try {
             const parent = await db.user.findUnique({ where: { email: email, role: "PARENT" } });
@@ -27,6 +35,36 @@ export class ParentService {
             logger.error({ message: "Failed to get parent using email id", object: error })
             throw new Error("Failed to get parent using email id");
         }
+    }
+
+
+    /**
+     * Function to check existing active invite for same parent and partner 
+     */
+    async checkExistingInvite({
+        partnerId,
+        parentId,
+        status = InvitationStatus.PENDING,
+        activeAt = new Date(),
+        deletedAt = null
+    }: {
+        partnerId: number;
+        parentId: number;
+        status?: InvitationStatus;
+        activeAt?: Date;
+        deletedAt?: Date | null;
+    }) {
+        return db.partnerParentInvitation.findFirst({
+            where: {
+                partnerId,
+                parentId,
+                ...(status && { status }),
+                ...(deletedAt !== undefined && { deletedAt }),
+                ...(activeAt && {
+                    expiryAt: { gt: activeAt }
+                })
+            }
+        });
     }
 
     /**
@@ -43,26 +81,59 @@ export class ParentService {
                 expiryAt: invitation.expiryAt
             };
         } catch (error) {
-            logger.error({ message: "Error creating PartnerParentInvitation", object: {
-                data, error
-            } });
+            logger.error({
+                message: "Error creating PartnerParentInvitation", object: {
+                    data, error
+                }
+            });
             throw new Error("Failed to create PartnerParentInvitation");
         }
     }
 
 
     /**
-     * Find invitation by decrypted invitationId
-     */
-    async findInvitationById(invitationId: number) {
-        return db.partnerParentInvitation.findUnique({
-            where: { id: invitationId },
+  * Finds an invitation by its decrypted invitation ID and optionally validates partnerId and parentId.
+  * 
+  * @param params.invitationId - The decrypted invitation ID to search for.
+  * @param params.partnerId - Optional partner ID to match.
+  * @param params.parentId - Optional parent ID to match.
+  * @returns The invitation record including partner and parent details, or null if not found.
+  */
+    async findInvitationById(
+        { invitationId, partnerId, parentId }: { invitationId: number, partnerId?: number; parentId?: number }
+    ) {
+        return db.partnerParentInvitation.findFirst({
+            where: {
+                id: invitationId,
+                ...(partnerId !== undefined && { partnerId }),
+                ...(parentId !== undefined && { parentId }),
+            },
             include: {
                 partner: true,
-                parent: true
+                parent: true,
+            },
+        });
+    }
+
+
+    /**
+     * Function to delete invite
+     * @param param0 invitationId 
+     * @returns 
+     */
+    async deleteInvite({ invitationId, partnerId, parentId }: { invitationId: number, partnerId?: number; parentId?: number }) {
+        return db.partnerParentInvitation.update({
+            where: {
+                id: invitationId,
+                ...(partnerId !== undefined && { partnerId }),
+                ...(parentId !== undefined && { parentId }),
+            },
+            data: {
+                deletedAt: new Date(),
             }
         });
     }
+
 
     /**
      * Mark invitation as accepted

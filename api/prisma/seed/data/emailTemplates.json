@@ -1,0 +1,58 @@
+[
+  {
+    "templateName": "parent_invite_template",
+    "templateType": "PARENT_INVITE",
+    "subject": "You Have Been Invited to Join as a Parent",
+    "bodyHtml": "<p>Hello __NAME__,</p><p>You are invited by __PARTNER_NAME__ to join our platform.</p><p>Click below to accept:</p><a href=\"__INVITE_LINK__\">Accept Invitation</a>",
+    "bodyText": "Hello __NAME__, You are invited by __PARTNER_NAME__. Visit __INVITE_LINK__",
+    "variables": ["__NAME__", "__PARTNER_NAME__", "__INVITE_LINK__"]
+  },
+  {
+    "templateName": "password_reset_template",
+    "templateType": "PASSWORD_RESET",
+    "subject": "Reset Your Password",
+    "bodyHtml": "<p>Hello __NAME__,</p><p>Click the link below to reset your password:</p><a href=\"__RESET_LINK__\">Reset Password</a>",
+    "bodyText": "Hello __NAME__, click here to reset your password: __RESET_LINK__",
+    "variables": ["__NAME__", "__RESET_LINK__"]
+  },
+  {
+    "templateName": "parent_welcome_template",
+    "templateType": "PARENT_WELCOME",
+    "subject": "Welcome to Our Platform, __NAME__!",
+    "bodyHtml": "<h2>Hello __NAME__!</h2><p>Your parent profile is now active. Start exploring the platform!</p>",
+    "bodyText": "Hello __NAME__! Your parent profile is active.",
+    "variables": ["__NAME__"]
+  },
+  {
+    "templateName": "partner_welcome_template",
+    "templateType": "PARTNER_WELCOME",
+    "subject": "Welcome to Our Platform, __NAME__!",
+    "bodyHtml": "<h2>Welcome __NAME__!</h2><p>Your partner account has been successfully created.</p><p>You can now log in using your email.</p>",
+    "bodyText": "Welcome __NAME__! Your partner account is ready.",
+    "variables": ["__NAME__"]
+  },
+  {
+    "templateName": "milestone_notification_template",
+    "templateType": "MILESTONE_NOTIFICATION",
+    "subject": "Milestone Update for __NAME__",
+    "bodyHtml": "<h3>Milestone Reached!</h3><p>Dear __NAME__,</p><p>Your child has reached a new milestone: <b>__MILESTONE_NAME__</b>.</p>",
+    "bodyText": "Milestone reached: __MILESTONE_NAME__ for __NAME__.",
+    "variables": ["__NAME__", "__MILESTONE_NAME__"]
+  },
+  {
+    "templateName": "session_reminder_template",
+    "templateType": "SESSION_REMINDER",
+    "subject": "Reminder: Upcoming Session",
+    "bodyHtml": "<p>Hello __NAME__,</p><p>This is a reminder for your upcoming session on <b>__DATE__</b> at <b>__TIME__</b>.</p>",
+    "bodyText": "Your session is on __DATE__ at __TIME__.",
+    "variables": ["__NAME__", "__DATE__", "__TIME__"]
+  },
+  {
+    "templateName": "default_email_template",
+    "templateType": "DEFAULT",
+    "subject": "Notification from Our Platform",
+    "bodyHtml": "<p>Hello __NAME__,</p><p>This is a default system notification.</p>",
+    "bodyText": "Hello __NAME__, this is a system notification.",
+    "variables": ["__NAME__"]
+  }
+]
