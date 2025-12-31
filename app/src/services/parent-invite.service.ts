@@ -9,6 +9,7 @@ import {
 } from "../types/parent-invite.type";
 import {
     PARENT_INVITE_ACCEPT_API,
+    PARENT_INVITE_DELETE_API,
     PARENT_INVITE_REJECT_API,
     PARENT_INVITE_SEND_API,
     PARENT_INVITE_VALIDATE_API,
@@ -29,7 +30,7 @@ export const parentInviteApi = createApi({
             }),
             invalidatesTags: ['InvitationList'],
         }),
-        
+
         validateParentInvite: builder.query<ApiResponse<InviteData>, string>({
             query: (inviteId) => ({
                 method: "get",
@@ -40,7 +41,7 @@ export const parentInviteApi = createApi({
                 },
             }),
         }),
-        
+
         acceptParentInvite: builder.mutation<ApiResponse, string>({
             query: (inviteId) => ({
                 url: PARENT_INVITE_ACCEPT_API,
@@ -51,7 +52,7 @@ export const parentInviteApi = createApi({
                 },
             }),
         }),
-        
+
         rejectParentInvite: builder.mutation<ApiResponse, string>({
             query: (inviteId) => ({
                 url: PARENT_INVITE_REJECT_API,
@@ -62,7 +63,7 @@ export const parentInviteApi = createApi({
                 },
             }),
         }),
-        
+
         // NEW: Get partner's invitation list
         getPartnerInvitations: builder.query<ApiResponse<InvitationListResponse>, GetInvitationsParams>({
             query: (params) => ({
@@ -75,6 +76,18 @@ export const parentInviteApi = createApi({
             }),
             providesTags: ['InvitationList'],
         }),
+        deleteParentInvite: builder.mutation<ApiResponse, string>({
+            query: (encryptedId) => ({
+                url: PARENT_INVITE_DELETE_API,
+                method: "delete",
+                useAuth: true,
+                params: {
+                    pathParams: { encryptedId },
+                },
+            }),
+            invalidatesTags: ['InvitationList'],
+        }),
+
     }),
 });
 
@@ -83,5 +96,6 @@ export const {
     useAcceptParentInviteMutation,
     useRejectParentInviteMutation,
     useSendParentInviteMutation,
-    useGetPartnerInvitationsQuery,  // NEW HOOK
+    useGetPartnerInvitationsQuery,
+    useDeleteParentInviteMutation,
 } = parentInviteApi;

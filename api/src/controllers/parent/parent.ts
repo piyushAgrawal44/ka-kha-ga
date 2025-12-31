@@ -143,8 +143,7 @@ export class ParentController {
     async deleteInvite(req: Request, res: Response) {
         try {
             const encryptedId = req.params.encryptedId || "";
-            const decodedId = EncryptionUtilInstance.decrypt(encryptedId);
-            const invitationId = Number(decodedId);
+            const invitationId = Number(encryptedId);
             const partnerUser = req.user;
 
             const invitation = await this.ParentService.findInvitationById({invitationId, partnerId: partnerUser.partnerId});

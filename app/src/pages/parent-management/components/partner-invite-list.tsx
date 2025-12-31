@@ -2,27 +2,23 @@
 import React, { useState, useEffect } from 'react';
 import { ColumnDef, SortingState } from '@tanstack/react-table';
 import {
-    Star,
-    Trophy,
-    Award,
-    Sparkles,
-    Plus,
     CheckCircle,
     XCircle,
     Clock,
     AlertCircle,
     TrendingUp,
-    Users,
     Mail,
-    Calendar
+    Trash2,
 } from 'lucide-react';
 import { Table } from '../../../components/ui/table/table';
-import Button from '../../../components/ui/button/button';
 import Input from '../../../components/ui/input/Input';
 import PageHeader from '../../../components/ui/page-header/page-header';
 import { useGetPartnerInvitationsQuery } from '../../../services/parent-invite.service';
 import { InvitationListItem, GetInvitationsParams, StatCardProps } from '../../../types/parent-invite.type';
 import { toast } from 'react-toastify';
+import Button from '../../../components/ui/button/button';
+import { useDeleteParentInviteMutation } from '../../../services/parent-invite.service';
+import ConfirmModal from '../../../components/ui/modal/confirmation-modal';
 
 const StatCard: React.FC<StatCardProps> = ({ title, value, icon, gradient }) => {
     return (
@@ -48,6 +44,9 @@ const PartnerInvitationsPage: React.FC = () => {
     const [statusFilter, setStatusFilter] = useState<string>('');
     const [searchQuery, setSearchQuery] = useState('');
     const [dateRange, setDateRange] = useState({ startDate: '', endDate: '' });
+    const [deleteParentInvite, { isLoading: isDeleting }] = useDeleteParentInviteMutation();
+    const [openConfirm, setOpenConfirm] = useState(false);
+    const [selectedId, setSelectedId] = useState<string | null>(null);
 
     // Build query parameters
     const queryParams: GetInvitationsParams = {
@@ -62,7 +61,7 @@ const PartnerInvitationsPage: React.FC = () => {
     };
 
     // Fetch data using RTK Query
-    const { data: response, isLoading, isError, error } = useGetPartnerInvitationsQuery(queryParams);
+    const { data: response, isLoading, isFetching, isError } = useGetPartnerInvitationsQuery(queryParams);
 
     const invitations = response?.data?.invitations || [];
     const statistics = response?.data?.statistics;
@@ -90,6 +89,27 @@ const PartnerInvitationsPage: React.FC = () => {
     // Define columns
     const columns: ColumnDef<InvitationListItem, any>[] = [
         {
+            id: 'actions',
+            header: 'Actions',
+            enableSorting: false,
+            cell: ({ row }) => (
+                <>
+                    <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => {
+                            setSelectedId(row.original.invitationId?.toString());
+                            setOpenConfirm(true);
+                        }}
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </Button>
+
+                </>
+            ),
+        },
+
+        {
             accessorKey: 'parentName',
             header: 'Parent Details',
             enableSorting: false,
@@ -112,7 +132,7 @@ const PartnerInvitationsPage: React.FC = () => {
             cell: ({ getValue, row }) => {
                 const status = getValue() as string;
                 const isExpired = row.original.isExpired;
-                
+
                 if (isExpired) {
                     return (
                         <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-semibold border-2 bg-red-100 text-red-700 border-red-300">
@@ -180,7 +200,7 @@ const PartnerInvitationsPage: React.FC = () => {
                 const date = new Date(getValue() as string);
                 const daysUntil = row.original.daysUntilExpiry;
                 const isExpired = row.original.isExpired;
-                
+
                 return (
                     <div className="text-sm">
                         <div className="font-medium text-gray-900">
@@ -224,6 +244,21 @@ const PartnerInvitationsPage: React.FC = () => {
 
     return (
         <div className="space-y-6">
+            <ConfirmModal
+                open={openConfirm}
+                title="Delete Invitation"
+                description="Are you sure you want to delete this parent invite?"
+                confirmText="Delete"
+                loading={isDeleting}
+                onClose={() => setOpenConfirm(false)}
+                onConfirm={async () => {
+                    if (!selectedId) return;
+                    await deleteParentInvite(selectedId);
+                    setOpenConfirm(false);
+                    toast.success("Invite deleted");
+                }}
+            />
+
             {/* Statistics Cards */}
             {statistics && (
                 <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-6 gap-4">
@@ -269,7 +304,7 @@ const PartnerInvitationsPage: React.FC = () => {
             {/* Header and Filters */}
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                 <PageHeader title="Parent Invitations" description="Manage and track all parent invitations" />
-                
+
                 <div className="flex flex-wrap gap-2 items-center">
                     {/* Status Filter */}
                     <select
@@ -312,7 +347,7 @@ const PartnerInvitationsPage: React.FC = () => {
                 onSortingChange={handleSortingChange}
                 pageSizeOptions={[5, 10, 20, 50]}
                 emptyMessage="No invitations found! 📧"
-                loading={isLoading}
+                loading={isLoading || isFetching}
             />
         </div>
     );
